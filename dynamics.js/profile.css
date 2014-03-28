@@ -105,44 +105,62 @@ header nav a:active, header nav a.active {
   width: 100%;
   text-align: center;
 }
-button#follow {
+a#view {
+  display: inline-block;
   margin-top: 10px;
   -webkit-appearance: none;
   appearance: none;
   border: none;
   border-radius: 5px;
   background: #53A9E9;
-  width: 94px;
-  height: 36px;
+  width: 72px;
+  height: 31px;
   font-size: 15px;
   color: #fff;
   line-height: 30px;
+  cursor: pointer;
 }
-button#follow .icon {
+a#view .icon {
   position: relative;
   display: inline-block;
-  background: url(img/profile/iconAdd.png) no-repeat;
-  background-size: 100% 100%;
+  background: url(img/profile/iconLink.png) no-repeat left bottom;
+  background-size: 10px 10px;
   width: 13px;
   height: 13px;
-  top: 1px;
+  top: 0px;
   margin-right: 3px;
+  pointer-events: none;
 }
-button#follow .label {
+a#view .icon .arrow {
+  position: relative;
+  display: block;
+  background: url(img/profile/iconLinkArrow.png) no-repeat right top;
+  background-size: 8px 8px;
+  width: 13px;
+  height: 13px;
+}
+a#view .label {
   display: inline-block;
   padding: 0 3px;
+  pointer-events: none;
 }
-button#follow:active {
+a#view:hover {
   background: #2489D3;
 }
-button#follow:focus {
+a#view:active {
+  background: #1c68b4;
+}
+a#view:focus {
   outline: none;
 }
 @media only screen and (-webkit-min-device-pixel-ratio: 1.5), only screen and (min--moz-device-pixel-ratio: 1.5), only screen and (min-device-pixel-ratio: 1.5) {
   header {
     background-image: url(img/profile/header@2x.png);
   }
-  button#follow .icon {
-    background-image: url(img/profile/iconAdd@2x.png);
+  a#view .icon {
+    background-image: url(img/profile/iconLink@2x.png);
+  }
+  a#view .icon .arrow {
+    background-image: url(img/profile/iconLinkArrow@2x.png);
   }
 }

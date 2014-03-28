@@ -1176,7 +1176,11 @@
         if (k === 'transform') {
           decomposedMatrix = null;
           if (progress >= 1) {
-            decomposedMatrix = frame1[k].value;
+            if (this.returnsToSelf) {
+              decomposedMatrix = frame0[k].value;
+            } else {
+              decomposedMatrix = frame1[k].value;
+            }
           }
           if (decomposedMatrix == null) {
             decomposedMatrix = MatrixTools.interpolate(frame0[k].value, frame1[k].value, t);

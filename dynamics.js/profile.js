@@ -5,9 +5,46 @@ var h1El = headerEl.querySelector("h1");
 var h2El = headerEl.querySelector("h2");
 var statsEl = document.body.querySelector("#stats");
 var statsColsEl = statsEl.querySelectorAll(".col");
-var followButton = document.body.querySelector("button#follow");
-var followButtonIcon = followButton.querySelector(".icon");
-var followButtonLabel = followButton.querySelector(".label");
+var viewButton = document.body.querySelector("a#view");
+var viewButtonIcon = viewButton.querySelector(".icon");
+var viewButtonIconArrow = viewButton.querySelector(".icon .arrow");
+var viewButtonLabel = viewButton.querySelector(".label");
+
+(function() {
+  var animated = false;
+  var animationTimeout;
+  var animation = new Dynamics.Animation(viewButtonIconArrow, {
+    transform: "translateX(3px) translateY(-3px)"
+  }, {
+    type: Dynamics.Types.GravityWithForce,
+    bounce: 47,
+    gravity: 1750,
+    complete: function() {
+      if(!animated)
+        return;
+      animationTimeout = setTimeout(function() {
+        animation.start();
+      }, 500);
+    }
+  });
+  var animateIconArrow = function(animate) {
+    if(animate == animated)
+      return;
+    animated = animate;
+    if(animate)
+      animation.start();
+    else {
+      if(animationTimeout)
+        clearTimeout(animationTimeout);
+    }
+  }
+  viewButton.addEventListener('mouseover', function() {
+    animateIconArrow(true);
+  });
+  viewButton.addEventListener('mouseout', function() {
+    animateIconArrow(false);
+  });
+})();
 
 var initialState = function() {
   Dynamics.css(profileEl, {
@@ -37,15 +74,15 @@ var initialState = function() {
       opacity: 0
     });
   }
-  Dynamics.css(followButton, {
+  Dynamics.css(viewButton, {
     transform: "translateY(-25px)",
     opacity: 0
   });
-  Dynamics.css(followButtonIcon, {
+  Dynamics.css(viewButtonIcon, {
     transform: "translateX(16px)",
     opacity: 0
   });
-  Dynamics.css(followButtonLabel, {
+  Dynamics.css(viewButtonLabel, {
     transform: "translateX(-8px)"
   });
 }
@@ -70,9 +107,9 @@ var show = function() {
   for(var i=0; i<statsColsEl.length; i++) {
     setTimeout(showElement.bind(this, statsColsEl[i]), 700 + i * 100);
   }
-  setTimeout(showElement.bind(this, followButton), 1000);
-  setTimeout(showElement.bind(this, followButtonIcon), 1600);
-  setTimeout(showElement.bind(this, followButtonLabel), 1600);
+  setTimeout(showElement.bind(this, viewButton), 1000);
+  setTimeout(showElement.bind(this, viewButtonIcon), 1000);
+  setTimeout(showElement.bind(this, viewButtonLabel), 1000);
 };
 
 var showElement = function(el) {
@@ -91,8 +128,3 @@ var showElement = function(el) {
 
 initialState();
 setTimeout(show, 200);
-
-window.addEventListener('click', function() {
-  initialState();
-  setTimeout(show, 200);
-});
