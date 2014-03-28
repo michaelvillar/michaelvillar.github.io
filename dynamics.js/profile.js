@@ -1,8 +1,12 @@
 var profileEl = document.body.querySelector("#profile");
 var headerEl = document.body.querySelector("header");
+var headerDivEls = headerEl.querySelectorAll("div");
 var iconEl = headerEl.querySelector("img");
 var h1El = headerEl.querySelector("h1");
 var h2El = headerEl.querySelector("h2");
+var descriptionEls = headerEl.querySelectorAll("p");
+var navLinkEls = headerEl.querySelectorAll("nav a");
+var navLinkSpanEls = headerEl.querySelectorAll("nav a span");
 var statsEl = document.body.querySelector("#stats");
 var statsColsEl = statsEl.querySelectorAll(".col");
 var viewButton = document.body.querySelector("a#view");
@@ -17,7 +21,7 @@ var viewButtonLabel = viewButton.querySelector(".label");
     transform: "translateX(3px) translateY(-3px)"
   }, {
     type: Dynamics.Types.GravityWithForce,
-    bounce: 47,
+    bounce: 60,
     gravity: 1750,
     complete: function() {
       if(!animated)
@@ -85,6 +89,18 @@ var initialState = function() {
   Dynamics.css(viewButtonLabel, {
     transform: "translateX(-8px)"
   });
+  for(var i=0; i<descriptionEls.length; i++) {
+    Dynamics.css(descriptionEls[i], {
+      transform: "translateX(50px)",
+      opacity: 0
+    });
+  }
+  for(var i=1; i<navLinkSpanEls.length; i++) {
+    Dynamics.css(navLinkSpanEls[i], {
+      transform: "scale(.1)",
+      opacity: 0
+    });
+  }
 }
 
 var show = function() {
@@ -125,6 +141,78 @@ var showElement = function(el) {
     duration: 600
   }).start();
 };
+
+(function() {
+  var steps = [
+    [iconEl, h1El, h2El],
+    [descriptionEls[0], descriptionEls[1]]
+  ];
+  var current = 0;
+  var options = {
+    type: Dynamics.Types.Spring,
+    frequency: 19,
+    friction: 578,
+    anticipationStrength: 0,
+    anticipationSize: 0,
+    duration: 1366
+  };
+  var linkOptions = {
+    type: Dynamics.Types.Spring,
+    frequency: 15,
+    friction: 300,
+    anticipationStrength: 0,
+    anticipationSize: 0,
+    duration: 1366
+  };
+  var headerGoTo = function(step) {
+    if(current == step)
+      return;
+    headerDivEls[step].classList.add('active');
+    headerDivEls[current].classList.remove('active');
+
+    new Dynamics.Animation(navLinkSpanEls[current], {
+      transform: "scale(.1)",
+      opacity: 0
+    }, linkOptions).start();
+    new Dynamics.Animation(navLinkSpanEls[step], {
+      transform: "none",
+      opacity: 1
+    }, linkOptions).start();
+
+    var direction = step > current;
+    var delay = 0;
+    var elements = steps[current];
+    for(var i=0;i<elements.length;i++) {
+      var el = elements[i];
+      setTimeout(function(el) {
+        new Dynamics.Animation(el, {
+          transform: (direction ? "translateX(-50px)" : "translateX(50px)"),
+          opacity: 0
+        }, options).start();
+      }.bind(this, el), delay);
+      delay += 50;
+    }
+
+    var elements = steps[step];
+    for(var i=0;i<elements.length;i++) {
+      var el = elements[i];
+      setTimeout(function(el) {
+        new Dynamics.Animation(el, {
+          transform: "none",
+          opacity: 1
+        }, options).start();
+      }.bind(this, el), delay);
+      delay += 50;
+    }
+
+    current = step;
+  };
+
+  for(var i=0; i<navLinkEls.length; i++) {
+    var link = navLinkEls[i];
+    link.addEventListener('click', headerGoTo.bind(this, i));
+  }
+})();
 
 initialState();
 setTimeout(show, 200);
