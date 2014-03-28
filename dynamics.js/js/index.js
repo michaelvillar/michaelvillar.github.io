@@ -219,7 +219,7 @@
         pointsValue = JSON.stringify(options.points);
         optionsStr += ",\n&nbsp;&nbsp;<strong>points</strong>: " + pointsValue;
       }
-      code = 'new <strong>Dynamics.Animation</strong>(document.getElementId("circle"), {\n&nbsp;&nbsp;<strong>transform</strong>: "translateX(' + translateX + 'px)"\n}, {\n' + optionsStr + '\n}).start();';
+      code = 'new <strong>Dynamics.Animation</strong>(document.getElementById("circle"), {\n&nbsp;&nbsp;<strong>transform</strong>: "translateX(' + translateX + 'px)"\n}, {\n' + optionsStr + '\n}).start();';
       return code;
     };
 
