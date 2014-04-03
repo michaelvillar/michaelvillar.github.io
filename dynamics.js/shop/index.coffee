@@ -114,12 +114,17 @@ logo = (->
     fade.show()
     logo.show()
 
+  imgLoaded = (img) ->
+    img.className = "loaded"
+
   for i in [1..SOCKS_COUNT]
     a = document.createElement('a')
     a.className = "item"
     img = document.createElement('img')
     img.src = "img/socks/socks-#{i}.jpg"
     a.appendChild(img)
+
+    img.addEventListener('load', imgLoaded.bind(this, img))
 
     a.addEventListener('mouseover', itemOver.bind(this, a))
     a.addEventListener('mouseout', itemOut.bind(this, a))
