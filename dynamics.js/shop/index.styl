@@ -1,0 +1,131 @@
+// Mixins
+user-select()
+  -webkit-user-select: arguments
+  -moz-user-select: arguments
+  user-select: arguments
+
+transition()
+  -webkit-transition: arguments
+  -moz-transition: arguments
+  transition: arguments
+
+background-image2x(url)
+  @media only screen and (-webkit-min-device-pixel-ratio: 1.5),
+       only screen and (min--moz-device-pixel-ratio: 1.5),
+       only screen and (min-device-pixel-ratio: 1.5) {
+    background-image: url(url)
+  }
+
+// CSS
+* {
+  padding: 0
+  margin: 0
+  border: none
+}
+
+a {
+  cursor: pointer
+}
+
+header {
+  position: fixed
+  top: 0
+  left: 0
+  right: 0
+  z-index: 10
+
+  a#logo {
+    position: absolute
+    top: 15px
+    left: 16px
+    font: 20px "Myriad Pro", "MyriadPro", Helvetica, Arial
+    color: #959BA1
+    user-select: none
+
+    &.hidden {
+      pointer-events: none
+    }
+
+    &:active {
+      color: #53A9E9
+      > span {
+        color: #53A9E9
+      }
+    }
+
+    > span {
+      font-weight: 600
+      color: #616467
+    }
+  }
+
+  a#cart {
+    position: absolute
+    top: 15px
+    right: 16px
+    display: block
+    width: 21px
+    height: 16px
+    background: url(img/cart.png) no-repeat
+    background-image2x: 'img/cart@2x.png'
+    background-size: 100% 100%
+  }
+}
+
+#grid {
+  line-height: 0
+  text-align: center
+  padding: 50px 30px
+  user-select: none
+
+  a.item {
+    position: relative
+    display: inline-block
+    width: 80px
+    height: 120px
+    margin: 10px
+    padding: 0
+    line-height: 0
+    background: #eaebed
+
+    &::after {
+      position: absolute
+      content: ''
+      left: 0
+      right: 0
+      bottom: 0
+      top: 0
+      z-index: 2
+      background: rgba(97,100,103,.2)
+      opacity: 0
+      transition: opacity .2s ease-in-out
+    }
+    &:active::after {
+      opacity: 1
+      transition: opacity .05s ease-in-out
+    }
+
+    img {
+      width: 100%
+      height: 100%
+    }
+  }
+}
+
+#fade {
+  position: fixed
+  top: 0
+  left: 0
+  right: 0
+  bottom: 0
+  z-index: 5
+  background: rgba(255,255,255,.95)
+  opacity: .000001
+  pointer-events: none
+  transition: opacity .2s ease-in-out
+
+  &.visible {
+    opacity: 1
+    pointer-events: auto
+  }
+}

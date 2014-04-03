@@ -10,6 +10,7 @@
     Dynamic.properties = {};
 
     function Dynamic(options) {
+      var k, v, _ref;
       this.options = options != null ? options : {};
       this.at = __bind(this.at, this);
 
@@ -17,6 +18,13 @@
 
       this.init = __bind(this.init, this);
 
+      _ref = this.options.type.properties;
+      for (k in _ref) {
+        v = _ref[k];
+        if (!(this.options[k] != null) && !v.editable) {
+          this.options[k] = v["default"];
+        }
+      }
     }
 
     Dynamic.prototype.init = function() {
@@ -93,6 +101,7 @@
     };
 
     function Gravity(options) {
+      var _ref;
       this.options = options != null ? options : {};
       this.at = __bind(this.at, this);
 
@@ -110,6 +119,9 @@
 
       this.expectedDuration = __bind(this.expectedDuration, this);
 
+      if ((_ref = this.initialForce) == null) {
+        this.initialForce = false;
+      }
       this.options.duration = this.duration();
       Gravity.__super__.constructor.call(this, this.options);
     }
@@ -143,7 +155,7 @@
         b: b,
         H: 1
       };
-      if (this.options.initialForce) {
+      if (this.initialForce) {
         curve.a = 0;
         curve.b = curve.b * 2;
       }
@@ -172,7 +184,7 @@
         b: b,
         H: 1
       };
-      if (this.options.initialForce) {
+      if (this.initialForce) {
         curve.a = 0;
         curve.b = curve.b * 2;
       }
@@ -195,7 +207,7 @@
       L = b - a;
       t2 = (2 / L) * t - 1 - (a * 2 / L);
       c = t2 * t2 * H - H + 1;
-      if (this.options.initialForce) {
+      if (this.initialForce) {
         c = 1 - c;
       }
       return c;
@@ -215,7 +227,7 @@
         }
       }
       if (!curve) {
-        if (this.options.initialForce) {
+        if (this.initialForce) {
           v = 0;
         } else {
           v = 1;
@@ -238,7 +250,7 @@
 
     function GravityWithForce(options) {
       this.options = options != null ? options : {};
-      this.options.initialForce = true;
+      this.initialForce = true;
       GravityWithForce.__super__.constructor.call(this, this.options);
     }
 
@@ -269,12 +281,12 @@
       anticipationStrength: {
         min: 0,
         max: 1000,
-        "default": 115
+        "default": 0
       },
       anticipationSize: {
         min: 0,
         max: 99,
-        "default": 10
+        "default": 0
       },
       duration: {
         min: 100,
@@ -340,7 +352,7 @@
       friction: {
         min: 1,
         max: 1000,
-        "default": 100
+        "default": 200
       },
       duration: {
         min: 100,
@@ -557,6 +569,7 @@
         }
       ];
       this.bezier = new Bezier({
+        type: Bezier,
         duration: this.options.duration,
         points: points
       });
@@ -657,7 +670,7 @@
     return Vector.create(result);
   };
 
-  window.MatrixTools = MatrixTools = {};
+  MatrixTools = {};
 
   MatrixTools.decompose = function(matrix) {
     var i, inversePerspectiveMatrix, j, k, pdum3, perspective, perspectiveMatrix, quaternion, rightHandSide, rotate, row, s, scale, skew, t, translate, transposedInversePerspectiveMatrix, type, v, w, x, y, z, _i, _j, _k, _l, _len, _m, _n, _o, _ref;
@@ -1157,7 +1170,7 @@
     };
 
     Animation.prototype.apply = function(t, args) {
-      var dValue, decomposedMatrix, frame0, frame1, k, matrix, newValue, oldValue, progress, properties, transform, unit, v, value, _results;
+      var dValue, frame0, frame1, k, matrix, newValue, oldValue, progress, properties, transform, unit, v, value;
       if (args == null) {
         args = {};
       }
@@ -1173,39 +1186,36 @@
         v = frame1[k];
         value = v.value;
         unit = v.unit;
+        newValue = null;
+        if (progress >= 1) {
+          if (this.returnsToSelf) {
+            newValue = frame0[k].value;
+          } else {
+            newValue = frame1[k].value;
+          }
+        }
         if (k === 'transform') {
-          decomposedMatrix = null;
-          if (progress >= 1) {
-            if (this.returnsToSelf) {
-              decomposedMatrix = frame0[k].value;
-            } else {
-              decomposedMatrix = frame1[k].value;
-            }
+          if (newValue == null) {
+            newValue = MatrixTools.interpolate(frame0[k].value, frame1[k].value, t);
           }
-          if (decomposedMatrix == null) {
-            decomposedMatrix = MatrixTools.interpolate(frame0[k].value, frame1[k].value, t);
-          }
-          matrix = MatrixTools.recompose(decomposedMatrix);
+          matrix = MatrixTools.recompose(newValue);
           properties['transform'] = MatrixTools.matrixToString(matrix);
         } else {
-          oldValue = null;
-          if (frame0[k]) {
-            oldValue = frame0[k].value;
+          if (!newValue) {
+            oldValue = null;
+            if (frame0[k]) {
+              oldValue = frame0[k].value;
+            }
+            if (oldValue == null) {
+              oldValue = this.defaultForProperty(k);
+            }
+            dValue = value - oldValue;
+            newValue = oldValue + (dValue * t);
           }
-          if (oldValue == null) {
-            oldValue = this.defaultForProperty(k);
-          }
-          dValue = value - oldValue;
-          newValue = oldValue + (dValue * t);
           properties[k] = newValue;
         }
       }
-      _results = [];
-      for (k in properties) {
-        v = properties[k];
-        _results.push(this.el.style[BrowserSupport.withPrefix(k)] = v);
-      }
-      return _results;
+      return css(this.el, properties);
     };
 
     return Animation;
