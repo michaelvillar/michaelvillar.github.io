@@ -72,6 +72,54 @@ logo = (->
   }
 )()
 
+class Loading
+  constructor: (el) ->
+    @el = el
+    @dots = @el.querySelectorAll('span')
+    @current = 0
+    @animated = false
+    @hiddenIndexes = []
+
+  start: =>
+    return if @animated
+    @animated = true
+    @tick()
+    @interval = setInterval(@tick, 500)
+
+  tick: =>
+    dot = @dots[@current]
+    if @stopping
+      setTimeout =>
+        new Dynamics.Animation(dot, {
+          opacity: 0
+        }, {
+          type: Dynamics.Types.EaseInOut,
+          duration: 300
+        }).start()
+      , 350
+      @hiddenIndexes.push(@current)
+    new Dynamics.Animation(dot, {
+      transform: "translateY(-10px)"
+    }, {
+      type: Dynamics.Types.GravityWithForce,
+      bounce: 60,
+      gravity: 1300
+    }).start()
+    @current += 1
+    if @current > 2
+      @current = 0
+    if @hiddenIndexes.indexOf(@current) != -1
+      clearInterval(@interval) if @interval
+      @hiddenIndexes = []
+
+  stop: =>
+    return unless @animated
+    @stopping = true
+    @animated = false
+
+loading = new Loading(document.querySelector('header .loading'))
+loading.start()
+
 (->
   grid = document.querySelector('#grid')
 
@@ -82,7 +130,6 @@ logo = (->
       @el = document.createElement('a')
       @el.className = "item"
       @img = document.createElement('img')
-      @img.src = "http://michaelvillar.github.io/dynamics.js/shop/img/socks/socks-#{i}.jpg"
       @el.appendChild(@img)
 
       @img.addEventListener('load', @imgLoaded)
@@ -91,7 +138,8 @@ logo = (->
       @el.addEventListener('mouseout', @itemOut)
       @el.addEventListener('click', @itemClick)
 
-      @displayItem()
+    load: =>
+      @img.src = "http://michaelvillar.github.io/dynamics.js/shop/img/socks/socks-#{@index}.jpg"
 
     itemOver: =>
       new Dynamics.Animation(@el, {
@@ -110,7 +158,7 @@ logo = (->
         duration: 1500
       }).start()
 
-    displayItem: =>
+    show: =>
       Dynamics.css(@el, {
         opacity: 0,
         transform: "scale(.01)"
@@ -134,9 +182,26 @@ logo = (->
 
     imgLoaded: =>
       @img.className = "loaded"
+      @loaded?()
+
+  items = []
+  loadedCount = 0
+  showItems = ->
+    loading.stop()
+    for item in items
+      item.show()
+  itemLoaded = ->
+    loadedCount += 1
+    if loadedCount >= items.length
+      showItems()
 
   for i in [1..SOCKS_COUNT]
-    new Item(i)
+    item = new Item(i)
+    item.loaded = itemLoaded
+    items.push(item)
+  for item in items
+    item.load()
+
 )()
 
 (->

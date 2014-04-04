@@ -75,6 +75,14 @@ header {
     background-image2x: 'img/cart@2x.png'
     background-size: 100% 100%
   }
+
+  .loading {
+    position: absolute
+    left: 50%
+    width: 30px
+    margin-left: -15px
+    top: 14px
+  }
 }
 
 #grid {
@@ -120,6 +128,23 @@ header {
         opacity: 1
       }
     }
+  }
+}
+
+.loading {
+  transition: opacity .25s ease-in-out
+
+  &.hidden {
+    opacity: 0
+  }
+
+  > span {
+    display: inline-block
+    width: 4px
+    height: 4px
+    border-radius: 2px
+    background: #616467
+    margin: 0 2px
   }
 }
 

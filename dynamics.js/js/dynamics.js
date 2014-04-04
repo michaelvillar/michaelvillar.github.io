@@ -957,19 +957,7 @@
 
   Animations = [];
 
-  stopAnimationsForEl = function(el) {
-    var animation, _i, _len, _results;
-    _results = [];
-    for (_i = 0, _len = Animations.length; _i < _len; _i++) {
-      animation = Animations[_i];
-      if (animation.el === el) {
-        _results.push(animation.stop());
-      } else {
-        _results.push(void 0);
-      }
-    }
-    return _results;
-  };
+  stopAnimationsForEl = function(el) {};
 
   css = function(el, properties) {
     var k, v, _results;
