@@ -9,6 +9,11 @@ transition()
   -moz-transition: arguments
   transition: arguments
 
+transform()
+  -webkit-transform: arguments
+  -moz-transform: arguments
+  transform: arguments
+
 background-image2x(url)
   @media only screen and (-webkit-min-device-pixel-ratio: 1.5),
        only screen and (min--moz-device-pixel-ratio: 1.5),
@@ -108,12 +113,12 @@ header {
     img {
       width: 100%
       height: 100%
-      // opacity: 0
-      // transition: opacity .25s ease-in-out
+      opacity: 0
+      transition: opacity .25s ease-in-out
 
-      // &.loaded {
-      //   opacity: 1
-      // }
+      &.loaded {
+        opacity: 1
+      }
     }
   }
 }

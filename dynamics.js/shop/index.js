@@ -92,7 +92,7 @@
   })();
 
   (function() {
-    var a, displayItem, grid, i, img, itemClick, itemOut, itemOver, _i, _results;
+    var a, displayItem, grid, i, img, imgLoaded, itemClick, itemOut, itemOver, _i, _results;
     grid = document.querySelector('#grid');
     itemOver = function(a) {
       return new Dynamics.Animation(a, {
@@ -133,6 +133,9 @@
       fade.show();
       return logo.show();
     };
+    imgLoaded = function(img) {
+      return img.className = "loaded";
+    };
     _results = [];
     for (i = _i = 1; 1 <= SOCKS_COUNT ? _i <= SOCKS_COUNT : _i >= SOCKS_COUNT; i = 1 <= SOCKS_COUNT ? ++_i : --_i) {
       a = document.createElement('a');
@@ -140,6 +143,7 @@
       img = document.createElement('img');
       img.src = "img/socks/socks-" + i + ".jpg";
       a.appendChild(img);
+      img.addEventListener('load', imgLoaded.bind(this, img));
       a.addEventListener('mouseover', itemOver.bind(this, a));
       a.addEventListener('mouseout', itemOut.bind(this, a));
       a.addEventListener('click', itemClick.bind(this, a));
