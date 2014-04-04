@@ -75,62 +75,68 @@ logo = (->
 (->
   grid = document.querySelector('#grid')
 
-  itemOver = (a) ->
-    new Dynamics.Animation(a, {
-      transform: "scale(1.18)"
-    }, {
-      type: Dynamics.Types.Spring,
-      frequency: 25,
-      duration: 300
-    }).start()
+  class Item
+    constructor: (i) ->
+      @index = i
 
-  itemOut = (a) ->
-    new Dynamics.Animation(a, {
-      transform: "none"
-    }, {
-      type: Dynamics.Types.Spring,
-      duration: 1500
-    }).start()
+      @el = document.createElement('a')
+      @el.className = "item"
+      @img = document.createElement('img')
+      @img.src = "http://michaelvillar.github.io/dynamics.js/shop/img/socks/socks-#{i}.jpg"
+      @el.appendChild(@img)
 
-  displayItem = (a, index) ->
-    Dynamics.css(a, {
-      opacity: 0,
-      transform: "scale(.01)"
-    })
-    grid.appendChild(a)
-    setTimeout ->
-      new Dynamics.Animation(a, {
-        transform: "scale(1)",
-        opacity: 1
+      @img.addEventListener('load', @imgLoaded)
+
+      @el.addEventListener('mouseover', @itemOver)
+      @el.addEventListener('mouseout', @itemOut)
+      @el.addEventListener('click', @itemClick)
+
+      @displayItem()
+
+    itemOver: =>
+      new Dynamics.Animation(@el, {
+        transform: "scale(1.18)"
       }, {
         type: Dynamics.Types.Spring,
-        friction: 500,
         frequency: 25,
-        duration: 2500
+        duration: 300
       }).start()
-    , index * 20
 
-  itemClick = (a) ->
-    fade.show()
-    logo.show()
+    itemOut: =>
+      new Dynamics.Animation(@el, {
+        transform: "none"
+      }, {
+        type: Dynamics.Types.Spring,
+        duration: 1500
+      }).start()
 
-  imgLoaded = (img) ->
-    img.className = "loaded"
+    displayItem: =>
+      Dynamics.css(@el, {
+        opacity: 0,
+        transform: "scale(.01)"
+      })
+      grid.appendChild(@el)
+      setTimeout =>
+        new Dynamics.Animation(@el, {
+          transform: "scale(1)",
+          opacity: 1
+        }, {
+          type: Dynamics.Types.Spring,
+          friction: 500,
+          frequency: 25,
+          duration: 2500
+        }).start()
+      , @index * 20
+
+    itemClick: =>
+      fade.show()
+      logo.show()
+
+    imgLoaded: =>
+      @img.className = "loaded"
 
   for i in [1..SOCKS_COUNT]
-    a = document.createElement('a')
-    a.className = "item"
-    img = document.createElement('img')
-    img.src = "img/socks/socks-#{i}.jpg"
-    a.appendChild(img)
-
-    img.addEventListener('load', imgLoaded.bind(this, img))
-
-    a.addEventListener('mouseover', itemOver.bind(this, a))
-    a.addEventListener('mouseout', itemOut.bind(this, a))
-    a.addEventListener('click', itemClick.bind(this, a))
-
-    displayItem(a, i - 1)
+    new Item(i)
 )()
 
 (->
