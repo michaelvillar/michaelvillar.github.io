@@ -1,4 +1,9 @@
 // Mixins
+appearance()
+  -webkit-appearance: arguments
+  -moz-appearance: arguments
+  appearance: arguments
+
 user-select()
   -webkit-user-select: arguments
   -moz-user-select: arguments
@@ -185,4 +190,75 @@ a.item {
   margin-top: -120px
   width: 500px
   z-index: 20
+  pointer-events: none
+
+  h2, p {
+    position: relative
+    top: 23px
+    left: 186px
+    overflow: hidden
+    span {
+      display: inline-block
+    }
+  }
+
+  h2 {
+    font: 20px "Myriad Pro", "MyriadPro", Helvetica, Arial
+    color: #616467
+  }
+
+  p {
+    font: 12px "Helvetica Neue", "HelveticaNeue", Helvetica, Arial
+    color: #8D9096
+    &.author {
+      margin-bottom: 22px
+    }
+    &.footer {
+      position absolute
+      top: 190px
+      padding-top: 10px
+      > span {
+        font-family: "HelveticaNeueMedium", "HelveticaNeue-Medium", "Helvetica Neue Medium", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial
+        font-size: 15px
+        color: #7B7E84
+        padding-right: 14px
+        padding-left: 13px
+        &.price {
+          padding-left: 0
+          border-right: 1px solid #CED2DA
+        }
+      }
+    }
+  }
+
+  button {
+    height: 31px
+    background: #53A9E9
+    border-radius: 5px
+    appearance: none
+    font-family: "HelveticaNeueMedium", "HelveticaNeue-Medium", "Helvetica Neue Medium", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial
+    font-size: 15px
+    color: white
+    padding: 0 9px
+    span.icon {
+      display: inline-block
+      width: 13px
+      height: 13px
+      background: url(img/iconAdd.png) no-repeat
+      background-image2x: 'img/iconAdd@2x.png'
+      background-size: 100% 100%
+    }
+    span.label {
+      position: relative
+      top: -1px
+      margin-left: 6px
+      margin-right: 2px
+    }
+    &:focus, &:active {
+      outline: none
+    }
+    &:active {
+      background-color: #2C7BB5
+    }
+  }
 }

@@ -84,6 +84,51 @@ logo = (->
   }
 )()
 
+product = (->
+  el = document.querySelector('#product')
+  texts = el.querySelectorAll('h2 > span, p > span, button')
+
+  show = ->
+    el.style.pointerEvents = 'auto'
+    for i in [0..texts.length - 1]
+      text = texts[i]
+      setTimeout ((text) =>
+        new Dynamics.Animation(text, {
+          opacity: 1,
+          transform: 'none'
+        }, {
+          type: Dynamics.Types.Spring,
+          frequency: 30,
+          friction: 800,
+          duration: 2000
+        }).start()
+      ).bind(this, text), 500 + i * 70
+
+  hide = (animated = true) ->
+    el.style.pointerEvents = 'none'
+    for i in [0..texts.length - 1]
+      text = texts[i]
+      if text.parentNode.tagName.toLowerCase() == 'h2'
+        h = 24
+      else
+        h = 18
+      new Dynamics.Animation(text, {
+        opacity: 0,
+        transform: "translateY(#{h}px)"
+      }, {
+        type: Dynamics.Types.EaseInOut,
+        duration: 200,
+        animated: animated
+      }).start()
+
+  hide(false)
+
+  {
+    show: show,
+    hide: hide
+  }
+)()
+
 class Loading
   constructor: (el) ->
     @el = el
@@ -201,8 +246,10 @@ grid = (->
     itemClick: =>
       fade.show()
       logo.show()
+      product.show()
       pos = @absolutePosition()
       @clonedEl = @el.cloneNode(true)
+      @clonedEl.addEventListener 'click', @close
       Dynamics.css(@clonedEl, {
         position: 'absolute',
         top: pos.top,
@@ -218,6 +265,8 @@ grid = (->
         type: Dynamics.Types.Spring,
         friction: 600,
         frequency: 10,
+        anticipationSize: 14,
+        anticipationStrength: 50,
         duration: 2000
       }).start()
       @clicked?()
@@ -225,6 +274,7 @@ grid = (->
     close: =>
       fade.hide()
       logo.updateOffset(animated: true)
+      product.hide()
       setTimeout =>
         Dynamics.css(@clonedEl, {
           zIndex: 1,
