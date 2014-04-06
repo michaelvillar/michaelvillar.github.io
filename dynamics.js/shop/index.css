@@ -23,3 +23,4 @@ a.item img.loaded{opacity:1}
 .loading > span{display:inline-block;width:4px;height:4px;border-radius:2px;background:#616467;margin:0 2px}
 #fade{position:fixed;top:0;left:0;right:0;bottom:0;z-index:5;background:rgba(255,255,255,0.95);opacity:.000001;pointer-events:none;-webkit-transition:opacity .4s ease-in-out;-moz-transition:opacity .4s ease-in-out;transition:opacity .4s ease-in-out;}
 #fade.visible{opacity:1;pointer-events:auto}
+#product{position:fixed;top:47%;left:50%;margin-left:-250px;margin-top:-120px;width:500px;z-index:20}

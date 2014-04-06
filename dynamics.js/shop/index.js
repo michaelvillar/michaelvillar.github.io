@@ -179,8 +179,9 @@
   loading.start();
 
   grid = (function() {
-    var Item, closeCurrentItem, currentItem, gridEl, i, item, itemClicked, itemLoaded, items, loadedCount, showItems, _i, _j, _len;
+    var Item, closeCurrentItem, currentItem, gridEl, i, item, itemClicked, itemLoaded, items, loadedCount, productEl, showItems, _i, _j, _len;
     gridEl = document.querySelector('#grid');
+    productEl = document.querySelector('#product');
     Item = (function() {
 
       function Item(i) {
@@ -189,6 +190,8 @@
         this.close = __bind(this.close, this);
 
         this.itemClick = __bind(this.itemClick, this);
+
+        this.absolutePosition = __bind(this.absolutePosition, this);
 
         this.show = __bind(this.show, this);
 
@@ -252,22 +255,32 @@
         }, this.index * 20);
       };
 
+      Item.prototype.absolutePosition = function() {
+        var offset, productOffset;
+        offset = cumulativeOffset(this.el);
+        productOffset = cumulativeOffset(productEl);
+        return {
+          top: offset.top - window.scrollY - productOffset.top,
+          left: offset.left - window.scrollX - productOffset.left
+        };
+      };
+
       Item.prototype.itemClick = function() {
-        var offset;
+        var pos;
         fade.show();
         logo.show();
-        offset = cumulativeOffset(this.el);
+        pos = this.absolutePosition();
         this.clonedEl = this.el.cloneNode(true);
         Dynamics.css(this.clonedEl, {
           position: 'absolute',
-          top: offset.top,
-          left: offset.left,
+          top: pos.top,
+          left: pos.left,
           zIndex: 100
         });
-        document.body.appendChild(this.clonedEl);
+        productEl.appendChild(this.clonedEl);
         this.el.classList.add('hidden');
         new Dynamics.Animation(this.clonedEl, {
-          transform: "translateX(" + (180 - offset.left + window.scrollX) + "px) translateY(" + (200 - offset.top + window.scrollY) + "px) scale(2)",
+          transform: "translateX(" + (-pos.left + 40) + "px) translateY(" + (-pos.top + 60) + "px) scale(2)",
           opacity: 1
         }, {
           type: Dynamics.Types.Spring,
@@ -279,7 +292,8 @@
       };
 
       Item.prototype.close = function() {
-        var _this = this;
+        var cloneElPos, pos, transform,
+          _this = this;
         fade.hide();
         logo.updateOffset({
           animated: true
@@ -289,8 +303,19 @@
             zIndex: 1
           });
         }, 400);
+        pos = this.absolutePosition();
+        transform = "translateX(" + (-parseInt(this.clonedEl.style.left, 10) + pos.left) + "px) translateY(" + (-parseInt(this.clonedEl.style.top, 10) + pos.top) + "px)";
+        cloneElPos = cumulativeOffset(this.clonedEl);
+        cloneElPos.top += window.scrollY;
+        cloneElPos.left += window.scrollX;
+        productEl.removeChild(this.clonedEl);
+        document.body.appendChild(this.clonedEl);
+        Dynamics.css(this.clonedEl, {
+          top: cloneElPos.top,
+          left: cloneElPos.left
+        });
         return new Dynamics.Animation(this.clonedEl, {
-          transform: "none",
+          transform: transform,
           opacity: 1
         }, {
           type: Dynamics.Types.Spring,
@@ -358,8 +383,13 @@
 
   (function() {
     var _this = this;
-    return window.addEventListener('scroll', function(e) {
+    window.addEventListener('scroll', function(e) {
       return logo.updateOffset();
+    });
+    return window.addEventListener('keyup', function(e) {
+      if (e.keyCode === 27) {
+        return grid.closeCurrentItem();
+      }
     });
   })();
 

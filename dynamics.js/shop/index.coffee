@@ -134,6 +134,7 @@ loading.start()
 
 grid = (->
   gridEl = document.querySelector('#grid')
+  productEl = document.querySelector('#product')
 
   class Item
     constructor: (i) ->
@@ -189,21 +190,29 @@ grid = (->
         }).start()
       , @index * 20
 
+    absolutePosition: =>
+      offset = cumulativeOffset(@el)
+      productOffset = cumulativeOffset(productEl)
+      {
+        top: offset.top - window.scrollY - productOffset.top,
+        left: offset.left - window.scrollX - productOffset.left
+      }
+
     itemClick: =>
       fade.show()
       logo.show()
-      offset = cumulativeOffset(@el)
+      pos = @absolutePosition()
       @clonedEl = @el.cloneNode(true)
       Dynamics.css(@clonedEl, {
         position: 'absolute',
-        top: offset.top,
-        left: offset.left,
+        top: pos.top,
+        left: pos.left,
         zIndex: 100,
       })
-      document.body.appendChild(@clonedEl)
+      productEl.appendChild(@clonedEl)
       @el.classList.add('hidden')
       new Dynamics.Animation(@clonedEl, {
-        transform: "translateX(#{180 - offset.left + window.scrollX}px) translateY(#{200 - offset.top + window.scrollY}px) scale(2)",
+        transform: "translateX(#{-pos.left + 40}px) translateY(#{-pos.top + 60}px) scale(2)",
         opacity: 1
       }, {
         type: Dynamics.Types.Spring,
@@ -221,8 +230,21 @@ grid = (->
           zIndex: 1,
         })
       , 400
+
+      pos = @absolutePosition()
+      transform = "translateX(#{- parseInt(@clonedEl.style.left, 10) + pos.left}px) translateY(#{- parseInt(@clonedEl.style.top, 10) + pos.top}px)"
+      cloneElPos = cumulativeOffset(@clonedEl)
+      cloneElPos.top += window.scrollY
+      cloneElPos.left += window.scrollX
+      productEl.removeChild(@clonedEl)
+      document.body.appendChild(@clonedEl)
+      Dynamics.css(@clonedEl, {
+        top: cloneElPos.top,
+        left: cloneElPos.left
+      })
+
       new Dynamics.Animation(@clonedEl, {
-        transform: "none",
+        transform: transform,
         opacity: 1
       }, {
         type: Dynamics.Types.Spring,
@@ -275,4 +297,9 @@ grid = (->
 (->
   window.addEventListener 'scroll', (e) =>
     logo.updateOffset()
+
+  window.addEventListener 'keyup', (e) =>
+    if e.keyCode == 27
+      # escape
+      grid.closeCurrentItem()
 )()
