@@ -85,6 +85,33 @@ header {
   }
 }
 
+a.item {
+  display: block
+  width: 80px
+  height: 120px
+  padding: 0
+  line-height: 0
+  background: #eaebed
+
+  &.hidden {
+    background: transparent
+    &::after, img {
+      visibility: hidden
+    }
+  }
+
+  img {
+    width: 100%
+    height: 100%
+    opacity: 0
+    transition: opacity .25s ease-in-out
+
+    &.loaded {
+      opacity: 1
+    }
+  }
+}
+
 #grid {
   line-height: 0
   text-align: center
@@ -94,12 +121,7 @@ header {
   a.item {
     position: relative
     display: inline-block
-    width: 80px
-    height: 120px
     margin: 10px
-    padding: 0
-    line-height: 0
-    background: #eaebed
 
     &::after {
       position: absolute
@@ -116,17 +138,6 @@ header {
     &:active::after {
       opacity: 1
       transition: opacity .05s ease-in-out
-    }
-
-    img {
-      width: 100%
-      height: 100%
-      opacity: 0
-      transition: opacity .25s ease-in-out
-
-      &.loaded {
-        opacity: 1
-      }
     }
   }
 }
@@ -158,7 +169,7 @@ header {
   background: rgba(255,255,255,.95)
   opacity: .000001
   pointer-events: none
-  transition: opacity .2s ease-in-out
+  transition: opacity .4s ease-in-out
 
   &.visible {
     opacity: 1

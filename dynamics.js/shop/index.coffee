@@ -30,11 +30,23 @@ fade = (->
   }
 )()
 
+cumulativeOffset = (el) ->
+  top = 0
+  left = 0
+  while el
+    top += el.offsetTop || 0
+    left += el.offsetLeft || 0
+    el = el.offsetParent
+
+  {
+    top: top,
+    left: left
+  }
+
 logo = (->
   el = document.querySelector('#logo')
   el.addEventListener 'click', ->
-    fade.hide()
-    updateOffset(animated: true)
+    grid.closeCurrentItem()
 
   scrollFade = 30
 
@@ -120,8 +132,8 @@ class Loading
 loading = new Loading(document.querySelector('header .loading'))
 loading.start()
 
-(->
-  grid = document.querySelector('#grid')
+grid = (->
+  gridEl = document.querySelector('#grid')
 
   class Item
     constructor: (i) ->
@@ -139,11 +151,12 @@ loading.start()
       @el.addEventListener('click', @itemClick)
 
     load: =>
-      @img.src = "http://michaelvillar.github.io/dynamics.js/shop/img/socks/socks-#{@index}.jpg"
+      @img.src = "./img/socks/socks-#{@index}.jpg"
 
     itemOver: =>
       new Dynamics.Animation(@el, {
-        transform: "scale(1.18)"
+        transform: "scale(1.18)",
+        opacity: 1
       }, {
         type: Dynamics.Types.Spring,
         frequency: 25,
@@ -163,7 +176,7 @@ loading.start()
         opacity: 0,
         transform: "scale(.01)"
       })
-      grid.appendChild(@el)
+      gridEl.appendChild(@el)
       setTimeout =>
         new Dynamics.Animation(@el, {
           transform: "scale(1)",
@@ -179,6 +192,49 @@ loading.start()
     itemClick: =>
       fade.show()
       logo.show()
+      offset = cumulativeOffset(@el)
+      @clonedEl = @el.cloneNode(true)
+      Dynamics.css(@clonedEl, {
+        position: 'absolute',
+        top: offset.top,
+        left: offset.left,
+        zIndex: 100,
+      })
+      document.body.appendChild(@clonedEl)
+      @el.classList.add('hidden')
+      new Dynamics.Animation(@clonedEl, {
+        transform: "translateX(#{180 - offset.left + window.scrollX}px) translateY(#{200 - offset.top + window.scrollY}px) scale(2)",
+        opacity: 1
+      }, {
+        type: Dynamics.Types.Spring,
+        friction: 600,
+        frequency: 10,
+        duration: 2000
+      }).start()
+      @clicked?()
+
+    close: =>
+      fade.hide()
+      logo.updateOffset(animated: true)
+      setTimeout =>
+        Dynamics.css(@clonedEl, {
+          zIndex: 1,
+        })
+      , 400
+      new Dynamics.Animation(@clonedEl, {
+        transform: "none",
+        opacity: 1
+      }, {
+        type: Dynamics.Types.Spring,
+        friction: 600,
+        frequency: 10,
+        duration: 2000,
+        complete: =>
+          @el.classList.remove('hidden')
+          document.body.removeChild(@clonedEl)
+          @clonedEl = null
+      }).start()
+
 
     imgLoaded: =>
       @img.className = "loaded"
@@ -186,6 +242,7 @@ loading.start()
 
   items = []
   loadedCount = 0
+  currentItem = null
   showItems = ->
     loading.stop()
     for item in items
@@ -194,14 +251,25 @@ loading.start()
     loadedCount += 1
     if loadedCount >= items.length
       showItems()
+  itemClicked = ->
+    currentItem = @
 
   for i in [1..SOCKS_COUNT]
     item = new Item(i)
     item.loaded = itemLoaded
+    item.clicked = itemClicked
     items.push(item)
   for item in items
     item.load()
 
+  closeCurrentItem = ->
+    if currentItem?
+      currentItem.close()
+    currentItem = null
+
+  {
+    closeCurrentItem: closeCurrentItem
+  }
 )()
 
 (->
