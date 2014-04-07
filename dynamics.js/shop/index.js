@@ -112,7 +112,7 @@
     closeButtonEl = el.querySelector('a.close');
     closeButtonSpan = closeButtonEl.querySelector('span');
     closeButtonSpanVisible = false;
-    closeButtonSpanStates = ['translateX(100px) rotate(90deg)', 'translateX(-100px) rotate(-90deg)'];
+    closeButtonSpanStates = ['translateY(-48px)', 'translateX(-48px) rotate(-90deg)'];
     Dynamics.css(closeButtonSpan, {
       transform: closeButtonSpanStates[1]
     });

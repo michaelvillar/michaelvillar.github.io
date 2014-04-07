@@ -92,8 +92,8 @@ product = (->
   closeButtonSpanVisible = false
 
   closeButtonSpanStates = [
-    'translateX(100px) rotate(90deg)',
-    'translateX(-100px) rotate(-90deg)'
+    'translateY(-48px)',
+    'translateX(-48px) rotate(-90deg)'
   ]
 
   Dynamics.css(closeButtonSpan, {
