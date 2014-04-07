@@ -32,9 +32,13 @@ a.item img.loaded{opacity:1}
 #product p.footer{position:absolute;top:190px;padding-top:10px;}
 #product p.footer > span{font-family:"HelveticaNeueMedium","HelveticaNeue-Medium","Helvetica Neue Medium","HelveticaNeue","Helvetica Neue",Helvetica,Arial;font-size:15px;color:#7b7e84;padding-right:14px;padding-left:13px;}
 #product p.footer > span.price{padding-left:0;border-right:1px solid #ced2da}
-#product button{height:31px;background:#53a9e9;border-radius:5px;-webkit-appearance:none;-moz-appearance:none;appearance:none;font-family:"HelveticaNeueMedium","HelveticaNeue-Medium","Helvetica Neue Medium","HelveticaNeue","Helvetica Neue",Helvetica,Arial;font-size:15px;color:#fff;padding:0 9px;}
+#product button{height:31px;background:#53a9e9;border-radius:5px;-webkit-appearance:none;-moz-appearance:none;appearance:none;font-family:"HelveticaNeueMedium","HelveticaNeue-Medium","Helvetica Neue Medium","HelveticaNeue","Helvetica Neue",Helvetica,Arial;font-size:15px;color:#fff;padding:0 9px;cursor:pointer;}
 #product button span.icon{display:inline-block;width:13px;height:13px;background:url("img/iconAdd.png") no-repeat;background-size:100% 100%}
 @media only screen and (-webkit-min-device-pixel-ratio: 1.5),only screen and (min--moz-device-pixel-ratio: 1.5),only screen and (min-device-pixel-ratio: 1.5){#product button span.icon{background-image:url("img/iconAdd@2x.png")}
 }#product button span.label{position:relative;top:-1px;margin-left:6px;margin-right:2px}
 #product button:focus,#product button:active{outline:none}
 #product button:active{background-color:#2c7bb5}
+#product a.close{position:absolute;top:0;left:0;width:160px;height:240px;display:block;overflow:hidden;z-index:200;}
+#product a.close span{position:absolute;top:101px;left:61px;display:block;background:url("img/closeButton.png") no-repeat;background-size:100% 100%;width:38px;height:38px;pointer-events:none}
+@media only screen and (-webkit-min-device-pixel-ratio: 1.5),only screen and (min--moz-device-pixel-ratio: 1.5),only screen and (min-device-pixel-ratio: 1.5){#product a.close span{background-image:url("img/closeButton@2x.png")}
+}

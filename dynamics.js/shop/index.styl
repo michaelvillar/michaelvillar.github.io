@@ -240,6 +240,7 @@ a.item {
     font-size: 15px
     color: white
     padding: 0 9px
+    cursor: pointer
     span.icon {
       display: inline-block
       width: 13px
@@ -259,6 +260,29 @@ a.item {
     }
     &:active {
       background-color: #2C7BB5
+    }
+  }
+
+  a.close {
+    position: absolute
+    top: 0
+    left: 0
+    width: 160px
+    height: 240px
+    display: block
+    overflow: hidden
+    z-index: 200
+    span {
+      position: absolute
+      top: 101px
+      left: 61px
+      display: block
+      background: url(img/closeButton.png) no-repeat
+      background-image2x: 'img/closeButton@2x.png'
+      background-size: 100% 100%
+      width: 38px
+      height: 38px
+      pointer-events: none
     }
   }
 }

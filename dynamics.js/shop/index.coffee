@@ -87,6 +87,58 @@ logo = (->
 product = (->
   el = document.querySelector('#product')
   texts = el.querySelectorAll('h2 > span, p > span, button')
+  closeButtonEl = el.querySelector('a.close')
+  closeButtonSpan = closeButtonEl.querySelector('span')
+  closeButtonSpanVisible = false
+
+  closeButtonSpanStates = [
+    'translateX(100px) rotate(90deg)',
+    'translateX(-100px) rotate(-90deg)'
+  ]
+
+  Dynamics.css(closeButtonSpan, {
+    transform: closeButtonSpanStates[1]
+  })
+
+  closeButtonEl.addEventListener 'mouseover', =>
+    closeButtonSpanVisible = true
+    new Dynamics.Animation(closeButtonSpan, {
+      transform: 'none'
+    }, {
+      type: Dynamics.Types.Spring,
+      frequency: 20,
+      friction: 800,
+      duration: 2000
+    }).start()
+
+  hideCloseButton = (properties = null, options = null) ->
+    return unless closeButtonSpanVisible
+    closeButtonSpanVisible = false
+    old = closeButtonSpan
+    if properties?
+      options.complete = ->
+        old.parentNode.removeChild(old)
+      new Dynamics.Animation(old, properties, options).start()
+    else
+      old.parentNode.removeChild(old)
+
+    closeButtonSpan = closeButtonSpan.cloneNode()
+    Dynamics.css(closeButtonSpan, {
+      transform: closeButtonSpanStates[1]
+    })
+    closeButtonEl.appendChild(closeButtonSpan)
+
+  closeButtonEl.addEventListener 'mouseout', =>
+    hideCloseButton({
+      transform: closeButtonSpanStates[0]
+    }, {
+     type: Dynamics.Types.Spring,
+     frequency: 0,
+     friction: 490,
+     anticipationStrength: 98,
+     anticipationSize: 53,
+     duration: 500
+    })
 
   show = ->
     el.style.pointerEvents = 'auto'
@@ -106,6 +158,7 @@ product = (->
 
   hide = (animated = true) ->
     el.style.pointerEvents = 'none'
+    hideCloseButton()
     for i in [0..texts.length - 1]
       text = texts[i]
       if text.parentNode.tagName.toLowerCase() == 'h2'
@@ -125,7 +178,8 @@ product = (->
 
   {
     show: show,
-    hide: hide
+    hide: hide,
+    closeButtonEl: closeButtonEl
   }
 )()
 
@@ -345,11 +399,11 @@ grid = (->
 )()
 
 (->
-  window.addEventListener 'scroll', (e) =>
-    logo.updateOffset()
-
+  window.addEventListener 'scroll', logo.updateOffset
   window.addEventListener 'keyup', (e) =>
     if e.keyCode == 27
       # escape
       grid.closeCurrentItem()
+
+  product.closeButtonEl.addEventListener 'click', grid.closeCurrentItem
 )()

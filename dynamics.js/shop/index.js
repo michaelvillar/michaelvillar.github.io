@@ -105,9 +105,67 @@
   })();
 
   product = (function() {
-    var el, hide, show, texts;
+    var closeButtonEl, closeButtonSpan, closeButtonSpanStates, closeButtonSpanVisible, el, hide, hideCloseButton, show, texts,
+      _this = this;
     el = document.querySelector('#product');
     texts = el.querySelectorAll('h2 > span, p > span, button');
+    closeButtonEl = el.querySelector('a.close');
+    closeButtonSpan = closeButtonEl.querySelector('span');
+    closeButtonSpanVisible = false;
+    closeButtonSpanStates = ['translateX(100px) rotate(90deg)', 'translateX(-100px) rotate(-90deg)'];
+    Dynamics.css(closeButtonSpan, {
+      transform: closeButtonSpanStates[1]
+    });
+    closeButtonEl.addEventListener('mouseover', function() {
+      closeButtonSpanVisible = true;
+      return new Dynamics.Animation(closeButtonSpan, {
+        transform: 'none'
+      }, {
+        type: Dynamics.Types.Spring,
+        frequency: 20,
+        friction: 800,
+        duration: 2000
+      }).start();
+    });
+    hideCloseButton = function(properties, options) {
+      var old;
+      if (properties == null) {
+        properties = null;
+      }
+      if (options == null) {
+        options = null;
+      }
+      if (!closeButtonSpanVisible) {
+        return;
+      }
+      closeButtonSpanVisible = false;
+      old = closeButtonSpan;
+      if (properties != null) {
+        options.complete = function() {
+          return old.parentNode.removeChild(old);
+        };
+        new Dynamics.Animation(old, properties, options).start();
+      } else {
+        old.parentNode.removeChild(old);
+      }
+      closeButtonSpan = closeButtonSpan.cloneNode();
+      Dynamics.css(closeButtonSpan, {
+        transform: closeButtonSpanStates[1]
+      });
+      return closeButtonEl.appendChild(closeButtonSpan);
+    };
+    closeButtonEl.addEventListener('mouseout', function() {
+      return hideCloseButton({
+        transform: closeButtonSpanStates[0]
+      }, {
+        type: Dynamics.Types.Spring,
+        frequency: 0,
+        friction: 490,
+        anticipationStrength: 98,
+        anticipationSize: 53,
+        duration: 500
+      });
+    });
     show = function() {
       var i, text, _i, _ref, _results,
         _this = this;
@@ -135,6 +193,7 @@
         animated = true;
       }
       el.style.pointerEvents = 'none';
+      hideCloseButton();
       _results = [];
       for (i = _i = 0, _ref = texts.length - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
         text = texts[i];
@@ -157,7 +216,8 @@
     hide(false);
     return {
       show: show,
-      hide: hide
+      hide: hide,
+      closeButtonEl: closeButtonEl
     };
   })();
 
@@ -445,14 +505,13 @@
 
   (function() {
     var _this = this;
-    window.addEventListener('scroll', function(e) {
-      return logo.updateOffset();
-    });
-    return window.addEventListener('keyup', function(e) {
+    window.addEventListener('scroll', logo.updateOffset);
+    window.addEventListener('keyup', function(e) {
       if (e.keyCode === 27) {
         return grid.closeCurrentItem();
       }
     });
+    return product.closeButtonEl.addEventListener('click', grid.closeCurrentItem);
   })();
 
 }).call(this);
