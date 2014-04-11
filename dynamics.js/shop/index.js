@@ -706,7 +706,29 @@
       return _results;
     });
     closeCartEl.addEventListener('click', function() {
-      return cart.setCloseButtonVisibility(false);
+      var delay, offset, translateX, windowHeight, windowWidth, _results;
+      cart.setCloseButtonVisibility(false);
+      windowWidth = window.innerWidth;
+      windowHeight = window.innerHeight;
+      _results = [];
+      for (i in items) {
+        item = items[i];
+        offset = cumulativeOffset(item.el);
+        delay = Math.abs(offset.left - (windowWidth / 2)) / (windowWidth / 2) + (windowHeight - offset.top) / windowHeight;
+        delay *= 500;
+        translateX = offset.left - (windowWidth / 2);
+        _results.push(new Dynamics.Animation(item.el, {
+          transform: "none"
+        }, {
+          type: Dynamics.Types.Spring,
+          frequency: 3,
+          friction: 200,
+          duration: 700
+        }).start({
+          delay: delay
+        }));
+      }
+      return _results;
     });
     closeCurrentItem = function() {
       if (currentItem != null) {

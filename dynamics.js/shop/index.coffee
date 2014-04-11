@@ -550,6 +550,24 @@ grid = (->
 
   closeCartEl.addEventListener 'click', ->
     cart.setCloseButtonVisibility(false)
+    windowWidth = window.innerWidth
+    windowHeight = window.innerHeight
+    for i, item of items
+      offset = cumulativeOffset(item.el)
+      delay = Math.abs(offset.left - (windowWidth / 2)) / (windowWidth / 2) +
+              (windowHeight - offset.top) / windowHeight
+      delay *= 500
+      translateX = offset.left - (windowWidth / 2)
+      new Dynamics.Animation(item.el, {
+        transform: "none"
+      }, {
+        type: Dynamics.Types.Spring,
+        frequency: 3,
+        friction: 200,
+        duration: 700
+      }).start({
+        delay: delay
+      })
 
   closeCurrentItem = ->
     if currentItem?
