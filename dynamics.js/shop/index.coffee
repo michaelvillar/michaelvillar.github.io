@@ -90,6 +90,7 @@ product = (->
   closeButtonEl = el.querySelector('a.close')
   closeButtonSpan = closeButtonEl.querySelector('span')
   closeButtonSpanVisible = false
+  button = el.querySelector('button')
 
   closeButtonSpanStates = [
     'translateY(-48px)',
@@ -179,7 +180,8 @@ product = (->
   {
     show: show,
     hide: hide,
-    closeButtonEl: closeButtonEl
+    closeButtonEl: closeButtonEl,
+    button: button
   }
 )()
 
@@ -231,9 +233,54 @@ class Loading
 loading = new Loading(document.querySelector('header .loading'))
 loading.start()
 
+cart = (->
+  cartEl = document.querySelector('header a#cart')
+  cartLabelEl = cartEl.querySelector('.label')
+  currentCartLabelEl = null
+  items = []
+
+  addItem = (item) ->
+    if currentCartLabelEl
+      new Dynamics.Animation(currentCartLabelEl, {
+        transform: 'translateY(6px)',
+        opacity: 0
+      }, {
+        type: Dynamics.Types.EaseInOut,
+        duration: 250
+      }).start()
+
+    items.push(item)
+    currentCartLabelEl = cartLabelEl.cloneNode()
+    currentCartLabelEl.innerHTML = items.length
+    Dynamics.css(currentCartLabelEl, {
+      transform: 'translateY(-6px)',
+      opacity: 0
+    })
+    cartEl.appendChild(currentCartLabelEl)
+    cartEl.className = 'filled'
+    new Dynamics.Animation(currentCartLabelEl, {
+      transform: "none"
+    }, {
+      type: Dynamics.Types.Gravity,
+      bounce: 60,
+      gravity: 1300
+    }).start()
+    new Dynamics.Animation(currentCartLabelEl, {
+      opacity: 1
+    }, {
+      type: Dynamics.Types.EaseInOut,
+      duration: 250
+    }).start()
+
+  {
+    addItem: addItem
+  }
+)()
+
 grid = (->
   gridEl = document.querySelector('#grid')
   productEl = document.querySelector('#product')
+  cartEl = document.querySelector('header a#cart')
 
   class Item
     constructor: (i) ->
@@ -325,18 +372,13 @@ grid = (->
       }).start()
       @clicked?()
 
-    close: =>
-      fade.hide()
-      logo.updateOffset(animated: true)
-      product.hide()
+    animateClonedEl: (properties = {}, options = {}, noAnimation = true) =>
       setTimeout =>
         Dynamics.css(@clonedEl, {
           zIndex: 1,
         })
       , 400
-
       pos = @absolutePosition()
-      transform = "translateX(#{- parseInt(@clonedEl.style.left, 10) + pos.left}px) translateY(#{- parseInt(@clonedEl.style.top, 10) + pos.top}px)"
       cloneElPos = cumulativeOffset(@clonedEl)
       cloneElPos.top += window.scrollY
       cloneElPos.left += window.scrollX
@@ -347,20 +389,73 @@ grid = (->
         left: cloneElPos.left
       })
 
-      new Dynamics.Animation(@clonedEl, {
+      options.complete = =>
+        unless noAnimation
+          Dynamics.css(@el, {
+            transform: 'scale(.01)'
+          })
+          new Dynamics.Animation(@el, {
+            transform: 'none'
+          }, {
+            type: Dynamics.Types.Spring,
+            friction: 600,
+            frequency: 20,
+            anticipationSize: 14,
+            anticipationStrength: 50,
+            duration: 2000
+          }).start()
+        @el.classList.remove('hidden')
+        document.body.removeChild(@clonedEl)
+        @clonedEl = null
+
+      new Dynamics.Animation(@clonedEl, properties, options).start()
+
+    close: =>
+      fade.hide()
+      logo.updateOffset(animated: true)
+      product.hide()
+
+      pos = @absolutePosition()
+      transform = "translateX(#{- parseInt(@clonedEl.style.left, 10) + pos.left}px) translateY(#{- parseInt(@clonedEl.style.top, 10) + pos.top}px)"
+      @animateClonedEl({
         transform: transform,
         opacity: 1
       }, {
         type: Dynamics.Types.Spring,
         friction: 600,
         frequency: 10,
-        duration: 2000,
-        complete: =>
-          @el.classList.remove('hidden')
-          document.body.removeChild(@clonedEl)
-          @clonedEl = null
-      }).start()
+        duration: 2000
+      })
 
+    addToCart: =>
+      fade.hide()
+      logo.updateOffset(animated: true)
+      product.hide()
+
+      pos = cumulativeOffset(@el)
+      offset = cumulativeOffset(cartEl)
+      offset.left += 27
+      transform = "translateX(#{offset.left - pos.left - 32}px) translateY(#{offset.top - pos.top - 48}px) scale(.2)"
+      console.log(pos, offset)
+      console.log(transform)
+      setTimeout =>
+        new Dynamics.Animation(@clonedEl, {
+          opacity: 0
+        }, {
+          type: Dynamics.Types.EaseInOut,
+          duration: 300
+        }).start()
+      , 400
+      @animateClonedEl({
+        transform: transform
+      }, {
+        type: Dynamics.Types.Spring,
+        frequency: 3,
+        friction: 200,
+        anticipationStrength: 67,
+        anticipationSize: 44,
+        duration: 700
+      }, false)
 
     imgLoaded: =>
       @img.className = "loaded"
@@ -393,8 +488,15 @@ grid = (->
       currentItem.close()
     currentItem = null
 
+  addToCartCurrentItem = ->
+    if currentItem?
+      setTimeout cart.addItem.bind(cart, currentItem), 500
+      currentItem.addToCart()
+    currentItem = null
+
   {
-    closeCurrentItem: closeCurrentItem
+    closeCurrentItem: closeCurrentItem,
+    addToCartCurrentItem: addToCartCurrentItem
   }
 )()
 
@@ -406,4 +508,5 @@ grid = (->
       grid.closeCurrentItem()
 
   product.closeButtonEl.addEventListener 'click', grid.closeCurrentItem
+  product.button.addEventListener 'click', grid.addToCartCurrentItem
 )()

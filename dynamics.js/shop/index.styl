@@ -71,14 +71,59 @@ header {
 
   a#cart {
     position: absolute
-    top: 15px
-    right: 16px
+    top: 11px
+    right: 10px
     display: block
-    width: 21px
-    height: 16px
-    background: url(img/cart.png) no-repeat
-    background-image2x: 'img/cart@2x.png'
-    background-size: 100% 100%
+    height: 31px
+    width: 54px
+    box-sizing: border-box
+    border: 2px solid #fff
+    transition: border-color .5s ease-in-out
+
+    &.filled {
+      border: 2px solid #EDEEF2
+      border-radius: 5px
+      > .icon {
+        right: 22px
+        &.blue {
+          opacity: 1
+        }
+      }
+    }
+
+    > span {
+      pointer-events: none
+    }
+    > .icon {
+      position: absolute
+      top: 6px
+      right: 6px
+      display: block
+      width: 21px
+      height: 16px
+      &.gray {
+        background: url(img/cart.png) no-repeat
+        background-image2x: 'img/cart@2x.png'
+        background-size: 100% 100%
+      }
+      &.blue {
+        background: url(img/cartBlue.png)
+        background-image2x: 'img/cartBlue@2x.png'
+        background-size: 100% 100%
+        opacity: 0
+      }
+      transition: all .2s ease-in-out
+    }
+    > .label {
+      position: absolute
+      top: 4px
+      right: 3px
+      width: 18px
+      text-align: center
+      font-family: "HelveticaNeueMedium", "HelveticaNeue-Medium", "Helvetica Neue Medium", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial
+      font-size: 15px
+      color: #53A9E9
+    }
   }
 
   .loading {

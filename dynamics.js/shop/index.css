@@ -6,9 +6,18 @@ header a#logo.hidden{pointer-events:none}
 header a#logo:active{color:#53a9e9;}
 header a#logo:active > span{color:#53a9e9}
 header a#logo > span{font-weight:600;color:#616467}
-header a#cart{position:absolute;top:15px;right:16px;display:block;width:21px;height:16px;background:url("img/cart.png") no-repeat;background-size:100% 100%}
-@media only screen and (-webkit-min-device-pixel-ratio: 1.5),only screen and (min--moz-device-pixel-ratio: 1.5),only screen and (min-device-pixel-ratio: 1.5){header a#cart{background-image:url("img/cart@2x.png")}
-}header .loading{position:absolute;left:50%;width:30px;margin-left:-15px;top:14px}
+header a#cart{position:absolute;top:11px;right:10px;display:block;height:31px;width:54px;box-sizing:border-box;border:2px solid #fff;-webkit-transition:border-color .5s ease-in-out;-moz-transition:border-color .5s ease-in-out;transition:border-color .5s ease-in-out;}
+header a#cart.filled{border:2px solid #edeef2;border-radius:5px;}
+header a#cart.filled > .icon{right:22px;}
+header a#cart.filled > .icon.blue{opacity:1}
+header a#cart > span{pointer-events:none}
+header a#cart > .icon{position:absolute;top:6px;right:6px;display:block;width:21px;height:16px;-webkit-transition:all .2s ease-in-out;-moz-transition:all .2s ease-in-out;transition:all .2s ease-in-out}
+header a#cart > .icon.gray{background:url("img/cart.png") no-repeat;background-size:100% 100%}
+@media only screen and (-webkit-min-device-pixel-ratio: 1.5),only screen and (min--moz-device-pixel-ratio: 1.5),only screen and (min-device-pixel-ratio: 1.5){header a#cart > .icon.gray{background-image:url("img/cart@2x.png")}
+}header a#cart > .icon.blue{background:url("img/cartBlue.png");background-size:100% 100%;opacity:0}
+@media only screen and (-webkit-min-device-pixel-ratio: 1.5),only screen and (min--moz-device-pixel-ratio: 1.5),only screen and (min-device-pixel-ratio: 1.5){header a#cart > .icon.blue{background-image:url("img/cartBlue@2x.png")}
+}header a#cart > .label{position:absolute;top:4px;right:3px;width:18px;text-align:center;font-family:"HelveticaNeueMedium","HelveticaNeue-Medium","Helvetica Neue Medium","HelveticaNeue","Helvetica Neue",Helvetica,Arial;font-size:15px;color:#53a9e9}
+header .loading{position:absolute;left:50%;width:30px;margin-left:-15px;top:14px}
 a.item{display:block;width:80px;height:120px;padding:0;line-height:0;background:#eaebed;}
 a.item.hidden{background:transparent;}
 a.item.hidden::after,a.item.hidden img{visibility:hidden}
