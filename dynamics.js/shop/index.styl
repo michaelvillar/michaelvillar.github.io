@@ -19,6 +19,11 @@ transform()
   -moz-transform: arguments
   transform: arguments
 
+transform-origin()
+  -webkit-transform-origin: arguments
+  -moz-transform-origin: arguments
+  transform-origin: arguments
+
 background-image2x(url)
   @media only screen and (-webkit-min-device-pixel-ratio: 1.5),
        only screen and (min--moz-device-pixel-ratio: 1.5),
@@ -69,6 +74,32 @@ header {
     }
   }
 
+  a#closeCart {
+    position: absolute
+    top: 11px
+    right: 10px
+    display: block
+    background: #8D9096
+    border-radius: 5px
+    width: 31px
+    height: 31px
+    &:active {
+      background: black
+    }
+    > span {
+      position: absolute
+      top: 11px
+      left: 11px
+      display: block
+      width: 10px
+      height: 10px
+      background: url(img/iconClose.png) no-repeat
+      background-image2x: 'img/iconClose@2x.png'
+      background-size: 100% 100%
+      pointer-events: none
+    }
+  }
+
   a#cart {
     position: absolute
     top: 11px
@@ -77,17 +108,38 @@ header {
     height: 31px
     width: 54px
     box-sizing: border-box
-    border: 2px solid #fff
-    transition: border-color .5s ease-in-out
+    border: 2px solid rgba(255,255,255,0)
+    transition: border-color .25s ease-in-out
+    user-select: none
+    border-radius: 5px
+    transform-origin: 38px 50%
 
     &.filled {
       border: 2px solid #EDEEF2
-      border-radius: 5px
+      &:hover {
+        border-color: #53A9E9
+        transition: border-color .25s ease-in-out
+      }
+      &:active {
+        border-color: #000
+        transition: none
+      }
       > .icon {
         right: 22px
         &.blue {
           opacity: 1
         }
+      }
+    }
+
+    &:active {
+      .icon.black {
+        opacity: 1
+        transition: none
+      }
+      > .label {
+        color: #000
+        transition: none
       }
     }
 
@@ -97,7 +149,7 @@ header {
     > .icon {
       position: absolute
       top: 6px
-      right: 6px
+      right: 2px
       display: block
       width: 21px
       height: 16px
@@ -112,6 +164,13 @@ header {
         background-size: 100% 100%
         opacity: 0
       }
+      &.black {
+        background: url(img/cartBlack.png)
+        background-image2x: 'img/cartBlack@2x.png'
+        background-size: 100% 100%
+        opacity: 0
+        transition: opacity .25s ease-in-out
+      }
       transition: all .2s ease-in-out
     }
     > .label {
@@ -123,6 +182,7 @@ header {
       font-family: "HelveticaNeueMedium", "HelveticaNeue-Medium", "Helvetica Neue Medium", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial
       font-size: 15px
       color: #53A9E9
+      transition: color .25s ease-in-out
     }
   }
 

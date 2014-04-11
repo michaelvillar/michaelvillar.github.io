@@ -248,18 +248,17 @@
     };
 
     Loading.prototype.tick = function() {
-      var dot,
-        _this = this;
+      var dot;
       dot = this.dots[this.current];
       if (this.stopping) {
-        setTimeout(function() {
-          return new Dynamics.Animation(dot, {
-            opacity: 0
-          }, {
-            type: Dynamics.Types.EaseInOut,
-            duration: 300
-          }).start();
-        }, 350);
+        new Dynamics.Animation(dot, {
+          opacity: 0
+        }, {
+          type: Dynamics.Types.EaseInOut,
+          duration: 300
+        }).start({
+          delay: 350
+        });
         this.hiddenIndexes.push(this.current);
       }
       new Dynamics.Animation(dot, {
@@ -298,11 +297,66 @@
   loading.start();
 
   cart = (function() {
-    var addItem, cartEl, cartLabelEl, currentCartLabelEl, items;
+    var addItem, cartEl, cartLabelEl, closeEl, currentCartLabelEl, items, setCloseButtonVisibility;
     cartEl = document.querySelector('header a#cart');
+    closeEl = document.querySelector('header a#closeCart');
     cartLabelEl = cartEl.querySelector('.label');
     currentCartLabelEl = null;
     items = [];
+    setCloseButtonVisibility = function(visible, options) {
+      var hideElement, opacityAnimationOptions, showElement, _ref;
+      if (options == null) {
+        options = {};
+      }
+      if ((_ref = options.animated) == null) {
+        options.animated = true;
+      }
+      opacityAnimationOptions = {
+        type: Dynamics.Types.EaseInOut,
+        duration: 200,
+        animated: options.animated
+      };
+      showElement = function(el) {
+        new Dynamics.Animation(el, {
+          transform: "none"
+        }, {
+          type: Dynamics.Types.Spring,
+          frequency: 25,
+          friction: 300,
+          duration: 700,
+          animated: options.animated
+        }).start({
+          delay: 150
+        });
+        return new Dynamics.Animation(el, {
+          opacity: 1
+        }, opacityAnimationOptions).start();
+      };
+      hideElement = function(el) {
+        new Dynamics.Animation(el, {
+          transform: "scaleX(.01)"
+        }, {
+          type: Dynamics.Types.EaseInOut,
+          duration: 300,
+          animated: options.animated
+        }).start();
+        return new Dynamics.Animation(el, {
+          opacity: 0
+        }, opacityAnimationOptions).start({
+          delay: options.animated ? 100 : void 0
+        });
+      };
+      if (visible) {
+        showElement(closeEl);
+        return hideElement(cartEl);
+      } else {
+        showElement(cartEl);
+        return hideElement(closeEl);
+      }
+    };
+    setCloseButtonVisibility(false, {
+      animated: false
+    });
     addItem = function(item) {
       if (currentCartLabelEl) {
         new Dynamics.Animation(currentCartLabelEl, {
@@ -337,15 +391,17 @@
       }).start();
     };
     return {
-      addItem: addItem
+      addItem: addItem,
+      setCloseButtonVisibility: setCloseButtonVisibility
     };
   })();
 
   grid = (function() {
-    var Item, addToCartCurrentItem, cartEl, closeCurrentItem, currentItem, gridEl, i, item, itemClicked, itemLoaded, items, loadedCount, productEl, showItems, _i, _j, _len;
+    var Item, addToCartCurrentItem, cartEl, closeCartEl, closeCurrentItem, currentItem, gridEl, i, item, itemClicked, itemLoaded, items, loadedCount, productEl, showItems, _i, _j, _len;
     gridEl = document.querySelector('#grid');
     productEl = document.querySelector('#product');
     cartEl = document.querySelector('header a#cart');
+    closeCartEl = document.querySelector('header a#closeCart');
     Item = (function() {
 
       function Item(i) {
@@ -404,23 +460,22 @@
       };
 
       Item.prototype.show = function() {
-        var _this = this;
         Dynamics.css(this.el, {
           opacity: 0,
           transform: "scale(.01)"
         });
         gridEl.appendChild(this.el);
-        return setTimeout(function() {
-          return new Dynamics.Animation(_this.el, {
-            transform: "scale(1)",
-            opacity: 1
-          }, {
-            type: Dynamics.Types.Spring,
-            friction: 500,
-            frequency: 25,
-            duration: 2500
-          }).start();
-        }, this.index * 20);
+        return new Dynamics.Animation(this.el, {
+          transform: "scale(1)",
+          opacity: 1
+        }, {
+          type: Dynamics.Types.Spring,
+          friction: 500,
+          frequency: 25,
+          duration: 2500
+        }).start({
+          delay: this.index * 20
+        });
       };
 
       Item.prototype.absolutePosition = function() {
@@ -534,8 +589,7 @@
       };
 
       Item.prototype.addToCart = function() {
-        var offset, pos, transform,
-          _this = this;
+        var offset, pos, transform;
         fade.hide();
         logo.updateOffset({
           animated: true
@@ -547,14 +601,14 @@
         transform = "translateX(" + (offset.left - pos.left - 32) + "px) translateY(" + (offset.top - pos.top - 48) + "px) scale(.2)";
         console.log(pos, offset);
         console.log(transform);
-        setTimeout(function() {
-          return new Dynamics.Animation(_this.clonedEl, {
-            opacity: 0
-          }, {
-            type: Dynamics.Types.EaseInOut,
-            duration: 300
-          }).start();
-        }, 400);
+        new Dynamics.Animation(this.clonedEl, {
+          opacity: 0
+        }, {
+          type: Dynamics.Types.EaseInOut,
+          duration: 300
+        }).start({
+          delay: 400
+        });
         return this.animateClonedEl({
           transform: transform
         }, {
@@ -607,6 +661,53 @@
       item = items[_j];
       item.load();
     }
+    cartEl.addEventListener('click', function() {
+      var delay, offset, translateX, windowHeight, windowWidth, _results;
+      cart.setCloseButtonVisibility(true);
+      windowWidth = window.innerWidth;
+      windowHeight = window.innerHeight;
+      _results = [];
+      for (i in items) {
+        item = items[i];
+        offset = cumulativeOffset(item.el);
+        delay = Math.abs(offset.left - (windowWidth / 2)) / (windowWidth / 2) + offset.top / windowHeight;
+        delay *= 500;
+        translateX = offset.left - (windowWidth / 2);
+        _results.push(new Dynamics.Animation(item.el, {
+          transform: "translateY(-" + (offset.top + 160) + "px) translateX(" + translateX + "px) rotate(" + (Math.round(Math.random() * 90 - 45)) + "deg)"
+        }, {
+          type: Dynamics.Types.Bezier,
+          duration: 450,
+          points: [
+            {
+              "x": 0,
+              "y": 0,
+              "controlPoints": [
+                {
+                  "x": 0.2,
+                  "y": 0
+                }
+              ]
+            }, {
+              "x": 1,
+              "y": 1,
+              "controlPoints": [
+                {
+                  "x": 0.843,
+                  "y": 0.351
+                }
+              ]
+            }
+          ]
+        }).start({
+          delay: delay
+        }));
+      }
+      return _results;
+    });
+    closeCartEl.addEventListener('click', function() {
+      return cart.setCloseButtonVisibility(false);
+    });
     closeCurrentItem = function() {
       if (currentItem != null) {
         currentItem.close();

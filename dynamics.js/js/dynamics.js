@@ -1015,6 +1015,8 @@
 
       this.stop = __bind(this.stop, this);
 
+      this._start = __bind(this._start, this);
+
       this.start = __bind(this.start, this);
 
       this.defaultForProperty = __bind(this.defaultForProperty, this);
@@ -1088,26 +1090,18 @@
     };
 
     Animation.prototype.convertToMatrix3d = function(transform) {
-      var a, b, c, content, d, elements, i, match, matrixElements, tx, ty, _i;
-      if (!/matrix/.test(transform)) {
-        transform = 'matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)';
-      } else {
-        match = transform.match(/matrix\(([-0-9\.]*), ([-0-9\.]*), ([-0-9\.]*), ([-0-9\.]*), ([-0-9\.]*), ([-0-9\.]*)\)/);
-        if (match) {
-          a = parseFloat(match[1]);
-          b = parseFloat(match[2]);
-          c = parseFloat(match[3]);
-          d = parseFloat(match[4]);
-          tx = parseFloat(match[5]);
-          ty = parseFloat(match[6]);
-          transform = "matrix3d(" + a + ", " + b + ", 0, 0, " + c + ", " + d + ", 0, 0, 0, 0, 1, 0, " + tx + ", " + ty + ", 0, 1)";
-        }
-      }
-      match = transform.match(/matrix3d\(([^)]*)\)/);
-      elements = null;
+      var digits, elements, i, match, matrixElements, _i;
+      match = transform.match(/matrix3?d?\(([-0-9, \.]*)\)/);
       if (match) {
-        content = match[1];
-        elements = content.split(',').map(parseFloat);
+        digits = match[1].split(',');
+        digits = digits.map(parseFloat);
+        if (digits.length === 6) {
+          elements = [digits[0], digits[1], 0, 0, digits[2], digits[3], 0, 0, 0, 0, 1, 0, digits[4], digits[5], 0, 1];
+        } else {
+          elements = digits;
+        }
+      } else {
+        elements = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
       }
       matrixElements = [];
       for (i = _i = 0; _i <= 3; i = ++_i) {
@@ -1164,8 +1158,23 @@
       return 0;
     };
 
-    Animation.prototype.start = function() {
+    Animation.prototype.start = function(options) {
+      var _ref;
+      if (options == null) {
+        options = {};
+      }
+      if ((_ref = options.delay) == null) {
+        options.delay = 0;
+      }
       stopAnimationsForEl(this.el, this.to);
+      if (options.delay <= 0) {
+        return this._start();
+      } else {
+        return setTimeout(this._start, options.delay);
+      }
+    };
+
+    Animation.prototype._start = function() {
       if (!this.options.animated) {
         this.apply(1, {
           progress: 1
