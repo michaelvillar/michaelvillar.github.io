@@ -338,7 +338,7 @@
           duration: 3500,
           animated: options.animated
         }).start({
-          delay: 100
+          delay: options.animated ? 100 : 0
         });
       };
       hide = function() {
@@ -350,7 +350,7 @@
           duration: 700,
           animated: options.animated
         }).start({
-          delay: 200
+          delay: options.animated ? 200 : 0
         });
         return new Dynamics.Animation(cartSection.items, {
           transform: "translateY(260px)",

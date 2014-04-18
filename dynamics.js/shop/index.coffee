@@ -268,7 +268,7 @@ cart = (->
         friction: 1200,
         duration: 3500,
         animated: options.animated,
-      }).start(delay: 100)
+      }).start(delay: if options.animated then 100 else 0)
 
     hide = ->
       cartSection.el.style.pointerEvents = 'none'
@@ -278,7 +278,7 @@ cart = (->
         type: Dynamics.Types.EaseInOut,
         duration: 700,
         animated: options.animated,
-      }).start(delay: 200)
+      }).start(delay: if options.animated then 200 else 0)
       new Dynamics.Animation(cartSection.items, {
         transform: "translateY(260px)",
         opacity: 0
