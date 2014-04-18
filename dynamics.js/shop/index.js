@@ -370,6 +370,7 @@
     setCartSectionVisibility(false, {
       animated: false
     });
+    cartSection.el.style.display = '';
     setCloseButtonVisibility = function(visible, options) {
       var hideElement, opacityAnimationOptions, showElement, _ref;
       if (options == null) {

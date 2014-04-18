@@ -294,6 +294,7 @@ cart = (->
       hide()
 
   setCartSectionVisibility(false, { animated: false })
+  cartSection.el.style.display = ''
 
   setCloseButtonVisibility = (visible, options = {}) ->
     options.animated ?= true
