@@ -423,6 +423,8 @@
 
         this.itemOver = __bind(this.itemOver, this);
 
+        this.setDisabled = __bind(this.setDisabled, this);
+
         this.load = __bind(this.load, this);
         this.index = i;
         this.el = document.createElement('a');
@@ -439,7 +441,14 @@
         return this.img.src = "./img/socks/socks-" + this.index + ".jpg";
       };
 
+      Item.prototype.setDisabled = function(disabled) {
+        this.disabled = disabled;
+      };
+
       Item.prototype.itemOver = function() {
+        if (this.disabled) {
+          return;
+        }
         return new Dynamics.Animation(this.el, {
           transform: "scale(1.18)",
           opacity: 1
@@ -451,6 +460,9 @@
       };
 
       Item.prototype.itemOut = function() {
+        if (this.disabled) {
+          return;
+        }
         return new Dynamics.Animation(this.el, {
           transform: "none"
         }, {
@@ -490,6 +502,9 @@
 
       Item.prototype.itemClick = function() {
         var pos;
+        if (this.disabled) {
+          return;
+        }
         fade.show();
         logo.show();
         product.show();
@@ -669,6 +684,7 @@
       _results = [];
       for (i in items) {
         item = items[i];
+        item.setDisabled(true);
         offset = cumulativeOffset(item.el);
         delay = Math.abs(offset.left - (windowWidth / 2)) / (windowWidth / 2) + offset.top / windowHeight;
         delay *= 500;
@@ -706,27 +722,34 @@
       return _results;
     });
     closeCartEl.addEventListener('click', function() {
-      var delay, offset, translateX, windowHeight, windowWidth, _results;
+      var windowHeight, windowWidth, _results;
       cart.setCloseButtonVisibility(false);
       windowWidth = window.innerWidth;
       windowHeight = window.innerHeight;
       _results = [];
       for (i in items) {
         item = items[i];
-        offset = cumulativeOffset(item.el);
-        delay = Math.abs(offset.left - (windowWidth / 2)) / (windowWidth / 2) + (windowHeight - offset.top) / windowHeight;
-        delay *= 500;
-        translateX = offset.left - (windowWidth / 2);
-        _results.push(new Dynamics.Animation(item.el, {
-          transform: "none"
-        }, {
-          type: Dynamics.Types.Spring,
-          frequency: 3,
-          friction: 200,
-          duration: 700
-        }).start({
-          delay: delay
-        }));
+        _results.push((function(item) {
+          var delay, offset, translateX,
+            _this = this;
+          offset = cumulativeOffset(item.el);
+          delay = Math.abs(offset.left - (windowWidth / 2)) / (windowWidth / 2) + (windowHeight - offset.top) / windowHeight;
+          delay *= 500;
+          translateX = offset.left - (windowWidth / 2);
+          return new Dynamics.Animation(item.el, {
+            transform: "none"
+          }, {
+            type: Dynamics.Types.Spring,
+            frequency: 3,
+            friction: 200,
+            duration: 700,
+            complete: function() {
+              return item.setDisabled(false);
+            }
+          }).start({
+            delay: delay
+          });
+        })(item));
       }
       return _results;
     });

@@ -345,7 +345,10 @@ grid = (->
     load: =>
       @img.src = "./img/socks/socks-#{@index}.jpg"
 
+    setDisabled: (@disabled) =>
+
     itemOver: =>
+      return if @disabled
       new Dynamics.Animation(@el, {
         transform: "scale(1.18)",
         opacity: 1
@@ -356,6 +359,7 @@ grid = (->
       }).start()
 
     itemOut: =>
+      return if @disabled
       new Dynamics.Animation(@el, {
         transform: "none"
       }, {
@@ -390,6 +394,7 @@ grid = (->
       }
 
     itemClick: =>
+      return if @disabled
       fade.show()
       logo.show()
       product.show()
@@ -533,6 +538,7 @@ grid = (->
     windowWidth = window.innerWidth
     windowHeight = window.innerHeight
     for i, item of items
+      item.setDisabled(true)
       offset = cumulativeOffset(item.el)
       delay = Math.abs(offset.left - (windowWidth / 2)) / (windowWidth / 2) +
               offset.top / windowHeight
@@ -553,21 +559,24 @@ grid = (->
     windowWidth = window.innerWidth
     windowHeight = window.innerHeight
     for i, item of items
-      offset = cumulativeOffset(item.el)
-      delay = Math.abs(offset.left - (windowWidth / 2)) / (windowWidth / 2) +
-              (windowHeight - offset.top) / windowHeight
-      delay *= 500
-      translateX = offset.left - (windowWidth / 2)
-      new Dynamics.Animation(item.el, {
-        transform: "none"
-      }, {
-        type: Dynamics.Types.Spring,
-        frequency: 3,
-        friction: 200,
-        duration: 700
-      }).start({
-        delay: delay
-      })
+      do (item) ->
+        offset = cumulativeOffset(item.el)
+        delay = Math.abs(offset.left - (windowWidth / 2)) / (windowWidth / 2) +
+                (windowHeight - offset.top) / windowHeight
+        delay *= 500
+        translateX = offset.left - (windowWidth / 2)
+        new Dynamics.Animation(item.el, {
+          transform: "none"
+        }, {
+          type: Dynamics.Types.Spring,
+          frequency: 3,
+          friction: 200,
+          duration: 700,
+          complete: =>
+            item.setDisabled(false)
+        }).start({
+          delay: delay
+        })
 
   closeCurrentItem = ->
     if currentItem?
