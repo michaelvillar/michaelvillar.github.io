@@ -297,12 +297,78 @@
   loading.start();
 
   cart = (function() {
-    var addItem, cartEl, cartLabelEl, closeEl, currentCartLabelEl, items, setCloseButtonVisibility;
+    var addItem, cartEl, cartLabelEl, cartSection, closeEl, currentCartLabelEl, items, setCartSectionVisibility, setCloseButtonVisibility;
     cartEl = document.querySelector('header a#cart');
     closeEl = document.querySelector('header a#closeCart');
     cartLabelEl = cartEl.querySelector('.label');
+    cartSection = {
+      el: document.querySelector('#cartSection'),
+      items: document.querySelector('#cartSection .items'),
+      footer: document.querySelector('#cartSection .footer')
+    };
     currentCartLabelEl = null;
     items = [];
+    setCartSectionVisibility = function(visible, options) {
+      var hide, show, _ref;
+      if (options == null) {
+        options = {};
+      }
+      if ((_ref = options.animated) == null) {
+        options.animated = true;
+      }
+      show = function() {
+        cartSection.el.style.pointerEvents = 'auto';
+        new Dynamics.Animation(cartSection.footer, {
+          transform: "none"
+        }, {
+          type: Dynamics.Types.Spring,
+          frequency: 25,
+          friction: 1200,
+          duration: 3500,
+          animated: options.animated
+        }).start();
+        return new Dynamics.Animation(cartSection.items, {
+          transform: "none",
+          opacity: 1
+        }, {
+          type: Dynamics.Types.Spring,
+          frequency: 25,
+          friction: 1200,
+          duration: 3500,
+          animated: options.animated
+        }).start({
+          delay: 100
+        });
+      };
+      hide = function() {
+        cartSection.el.style.pointerEvents = 'none';
+        new Dynamics.Animation(cartSection.footer, {
+          transform: "translateY(260px)"
+        }, {
+          type: Dynamics.Types.EaseInOut,
+          duration: 700,
+          animated: options.animated
+        }).start({
+          delay: 200
+        });
+        return new Dynamics.Animation(cartSection.items, {
+          transform: "translateY(260px)",
+          opacity: 0
+        }, {
+          type: Dynamics.Types.EaseInOut,
+          duration: 700,
+          animated: options.animated
+        }).start();
+      };
+      if (visible) {
+        return show();
+      } else {
+        return hide();
+      }
+    };
+    setCartSectionVisibility(false, {
+      animated: false
+    });
     setCloseButtonVisibility = function(visible, options) {
       var hideElement, opacityAnimationOptions, showElement, _ref;
       if (options == null) {
@@ -392,7 +458,8 @@
     };
     return {
       addItem: addItem,
-      setCloseButtonVisibility: setCloseButtonVisibility
+      setCloseButtonVisibility: setCloseButtonVisibility,
+      setCartSectionVisibility: setCartSectionVisibility
     };
   })();
 
@@ -677,53 +744,12 @@
       item.load();
     }
     cartEl.addEventListener('click', function() {
-      var delay, offset, translateX, windowHeight, windowWidth, _results;
+      var windowHeight, windowWidth, _results,
+        _this = this;
       cart.setCloseButtonVisibility(true);
-      windowWidth = window.innerWidth;
-      windowHeight = window.innerHeight;
-      _results = [];
-      for (i in items) {
-        item = items[i];
-        item.setDisabled(true);
-        offset = cumulativeOffset(item.el);
-        delay = Math.abs(offset.left - (windowWidth / 2)) / (windowWidth / 2) + offset.top / windowHeight;
-        delay *= 500;
-        translateX = offset.left - (windowWidth / 2);
-        _results.push(new Dynamics.Animation(item.el, {
-          transform: "translateY(-" + (offset.top + 160) + "px) translateX(" + translateX + "px) rotate(" + (Math.round(Math.random() * 90 - 45)) + "deg)"
-        }, {
-          type: Dynamics.Types.Bezier,
-          duration: 450,
-          points: [
-            {
-              "x": 0,
-              "y": 0,
-              "controlPoints": [
-                {
-                  "x": 0.2,
-                  "y": 0
-                }
-              ]
-            }, {
-              "x": 1,
-              "y": 1,
-              "controlPoints": [
-                {
-                  "x": 0.843,
-                  "y": 0.351
-                }
-              ]
-            }
-          ]
-        }).start({
-          delay: delay
-        }));
-      }
-      return _results;
-    });
-    closeCartEl.addEventListener('click', function() {
-      var windowHeight, windowWidth, _results;
-      cart.setCloseButtonVisibility(false);
+      setTimeout(function() {
+        return cart.setCartSectionVisibility(true);
+      }, 1000);
       windowWidth = window.innerWidth;
       windowHeight = window.innerHeight;
       _results = [];
@@ -732,6 +758,60 @@
         _results.push((function(item) {
           var delay, offset, translateX,
             _this = this;
+          item.setDisabled(true);
+          offset = cumulativeOffset(item.el);
+          delay = Math.abs(offset.left - (windowWidth / 2)) / (windowWidth / 2) + offset.top / windowHeight;
+          delay *= 500;
+          translateX = offset.left - (windowWidth / 2);
+          return new Dynamics.Animation(item.el, {
+            transform: "translateY(-" + (offset.top + 160) + "px) translateX(" + translateX + "px) rotate(" + (Math.round(Math.random() * 90 - 45)) + "deg)"
+          }, {
+            type: Dynamics.Types.Bezier,
+            duration: 450,
+            points: [
+              {
+                "x": 0,
+                "y": 0,
+                "controlPoints": [
+                  {
+                    "x": 0.2,
+                    "y": 0
+                  }
+                ]
+              }, {
+                "x": 1,
+                "y": 1,
+                "controlPoints": [
+                  {
+                    "x": 0.843,
+                    "y": 0.351
+                  }
+                ]
+              }
+            ],
+            complete: function() {
+              return item.el.style.visibility = 'hidden';
+            }
+          }).start({
+            delay: delay
+          });
+        })(item));
+      }
+      return _results;
+    });
+    closeCartEl.addEventListener('click', function() {
+      var windowHeight, windowWidth, _results;
+      cart.setCloseButtonVisibility(false);
+      cart.setCartSectionVisibility(false);
+      windowWidth = window.innerWidth;
+      windowHeight = window.innerHeight;
+      _results = [];
+      for (i in items) {
+        item = items[i];
+        _results.push((function(item) {
+          var delay, offset, translateX,
+            _this = this;
+          item.el.style.visibility = '';
           offset = cumulativeOffset(item.el);
           delay = Math.abs(offset.left - (windowWidth / 2)) / (windowWidth / 2) + (windowHeight - offset.top) / windowHeight;
           delay *= 500;

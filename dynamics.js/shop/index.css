@@ -33,7 +33,7 @@ a.item.hidden{background:transparent;}
 a.item.hidden::after,a.item.hidden img{visibility:hidden}
 a.item img{width:100%;height:100%;opacity:0;-webkit-transition:opacity .25s ease-in-out;-moz-transition:opacity .25s ease-in-out;transition:opacity .25s ease-in-out;}
 a.item img.loaded{opacity:1}
-#grid{line-height:0;text-align:center;padding:50px 30px;-webkit-user-select:none;-moz-user-select:none;user-select:none;}
+#grid{line-height:0;text-align:center;padding:50px 30px;-webkit-user-select:none;-moz-user-select:none;user-select:none;overflow-x:hidden;}
 #grid a.item{position:relative;display:inline-block;margin:10px;}
 #grid a.item::after{position:absolute;content:'';left:0;right:0;bottom:0;top:0;z-index:2;background:rgba(97,100,103,0.2);opacity:0;-webkit-transition:opacity .2s ease-in-out;-moz-transition:opacity .2s ease-in-out;transition:opacity .2s ease-in-out}
 #grid a.item:active::after{opacity:1;-webkit-transition:opacity .05s ease-in-out;-moz-transition:opacity .05s ease-in-out;transition:opacity .05s ease-in-out}
@@ -60,4 +60,20 @@ a.item img.loaded{opacity:1}
 #product a.close{position:absolute;top:0;left:0;width:160px;height:240px;display:block;overflow:hidden;z-index:200;}
 #product a.close span{position:absolute;top:10px;left:10px;display:block;background:url("img/closeButton.png") no-repeat;background-size:100% 100%;width:38px;height:38px;pointer-events:none}
 @media only screen and (-webkit-min-device-pixel-ratio: 1.5),only screen and (min--moz-device-pixel-ratio: 1.5),only screen and (min-device-pixel-ratio: 1.5){#product a.close span{background-image:url("img/closeButton@2x.png")}
-}
+}#cartSection{position:fixed;top:0;left:0;right:0;bottom:0;font:13px "Helvetica Neue","HelveticaNeue",Helvetica,Arial;color:#7b7e84;}
+#cartSection .items{position:absolute;left:50%;margin-left:-167px;width:334px;bottom:240px;margin-bottom:9px;}
+#cartSection .items .item{position:relative;width:100%;height:60px;margin-bottom:9px;}
+#cartSection .items .item img{width:40px}
+#cartSection .items .item p{position:absolute;top:16px;left:52px}
+#cartSection .items .item .amount{position:absolute;top:21px;right:0;font-size:15px;}
+#cartSection .items .item .amount .price{font-family:"HelveticaNeueMedium","HelveticaNeue-Medium","Helvetica Neue Medium","HelveticaNeue","Helvetica Neue",Helvetica,Arial}
+#cartSection .footer{position:absolute;left:0;right:0;bottom:-100px;height:340px;background:#f0f2f4;text-shadow:#fff;z-index:5;}
+#cartSection .footer dl,#cartSection .footer .buttons{width:334px;margin:0 auto}
+#cartSection .footer dl{margin-top:13px;font-size:15px;}
+#cartSection .footer dl dt,#cartSection .footer dl dd{display:inline-block;width:50%;line-height:1.3em}
+#cartSection .footer dl dd{text-align:right;font-family:"HelveticaNeueMedium","HelveticaNeue-Medium","Helvetica Neue Medium","HelveticaNeue","Helvetica Neue",Helvetica,Arial}
+#cartSection .footer dl.total{border-top:1px solid #d3d5d9;padding-top:8px;margin-top:14px;font-size:17px;color:#5b5e65}
+#cartSection .footer .buttons{margin-top:10px;text-align:right;}
+#cartSection .footer .buttons button.checkout{display:inline-block;width:106px;height:36px;background:#53a9e9;border-radius:5px;font-size:18px;font-family:"HelveticaNeueMedium","HelveticaNeue-Medium","Helvetica Neue Medium","HelveticaNeue","Helvetica Neue",Helvetica,Arial;color:#fff;padding:0 3px;-webkit-appearance:none;-moz-appearance:none;appearance:none;}
+#cartSection .footer .buttons button.checkout:focus,#cartSection .footer .buttons button.checkout:active{outline:none}
+#cartSection .footer .buttons button.checkout:active{background-color:#2c7bb5}

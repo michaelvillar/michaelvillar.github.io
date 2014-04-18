@@ -237,8 +237,62 @@ cart = (->
   cartEl = document.querySelector('header a#cart')
   closeEl = document.querySelector('header a#closeCart')
   cartLabelEl = cartEl.querySelector('.label')
+  cartSection = {
+    el: document.querySelector('#cartSection'),
+    items: document.querySelector('#cartSection .items'),
+    footer: document.querySelector('#cartSection .footer')
+  }
   currentCartLabelEl = null
   items = []
+
+  setCartSectionVisibility = (visible, options = {}) ->
+    options.animated ?= true
+    show = ->
+      cartSection.el.style.pointerEvents = 'auto'
+      new Dynamics.Animation(cartSection.footer, {
+        transform: "none"
+      }, {
+        type: Dynamics.Types.Spring,
+        frequency: 25,
+        friction: 1200,
+        duration: 3500,
+        animated: options.animated,
+      }).start()
+      new Dynamics.Animation(cartSection.items, {
+        transform: "none",
+        opacity: 1
+      }, {
+        type: Dynamics.Types.Spring,
+        frequency: 25,
+        friction: 1200,
+        duration: 3500,
+        animated: options.animated,
+      }).start(delay: 100)
+
+    hide = ->
+      cartSection.el.style.pointerEvents = 'none'
+      new Dynamics.Animation(cartSection.footer, {
+        transform: "translateY(260px)"
+      }, {
+        type: Dynamics.Types.EaseInOut,
+        duration: 700,
+        animated: options.animated,
+      }).start(delay: 200)
+      new Dynamics.Animation(cartSection.items, {
+        transform: "translateY(260px)",
+        opacity: 0
+      }, {
+        type: Dynamics.Types.EaseInOut,
+        duration: 700,
+        animated: options.animated,
+      }).start()
+
+    if visible
+      show()
+    else
+      hide()
+
+  setCartSectionVisibility(false, { animated: false })
 
   setCloseButtonVisibility = (visible, options = {}) ->
     options.animated ?= true
@@ -317,7 +371,8 @@ cart = (->
 
   {
     addItem: addItem,
-    setCloseButtonVisibility: setCloseButtonVisibility
+    setCloseButtonVisibility: setCloseButtonVisibility,
+    setCartSectionVisibility: setCartSectionVisibility
   }
 )()
 
@@ -535,31 +590,39 @@ grid = (->
 
   cartEl.addEventListener 'click', ->
     cart.setCloseButtonVisibility(true)
-    windowWidth = window.innerWidth
-    windowHeight = window.innerHeight
-    for i, item of items
-      item.setDisabled(true)
-      offset = cumulativeOffset(item.el)
-      delay = Math.abs(offset.left - (windowWidth / 2)) / (windowWidth / 2) +
-              offset.top / windowHeight
-      delay *= 500
-      translateX = offset.left - (windowWidth / 2)
-      new Dynamics.Animation(item.el, {
-        transform: "translateY(-#{offset.top + 160}px) translateX(#{translateX}px) rotate(#{Math.round(Math.random() * 90 - 45)}deg)"
-      }, {
-        type: Dynamics.Types.Bezier,
-        duration: 450,
-        points: [{"x":0,"y":0,"controlPoints":[{"x":0.2,"y":0}]},{"x":1,"y":1,"controlPoints":[{"x":0.843,"y":0.351}]}]
-      }).start({
-        delay: delay
-      })
-
-  closeCartEl.addEventListener 'click', ->
-    cart.setCloseButtonVisibility(false)
+    setTimeout =>
+      cart.setCartSectionVisibility(true)
+    , 1000
     windowWidth = window.innerWidth
     windowHeight = window.innerHeight
     for i, item of items
       do (item) ->
+        item.setDisabled(true)
+        offset = cumulativeOffset(item.el)
+        delay = Math.abs(offset.left - (windowWidth / 2)) / (windowWidth / 2) +
+                offset.top / windowHeight
+        delay *= 500
+        translateX = offset.left - (windowWidth / 2)
+        new Dynamics.Animation(item.el, {
+          transform: "translateY(-#{offset.top + 160}px) translateX(#{translateX}px) rotate(#{Math.round(Math.random() * 90 - 45)}deg)"
+        }, {
+          type: Dynamics.Types.Bezier,
+          duration: 450,
+          points: [{"x":0,"y":0,"controlPoints":[{"x":0.2,"y":0}]},{"x":1,"y":1,"controlPoints":[{"x":0.843,"y":0.351}]}],
+          complete: =>
+            item.el.style.visibility = 'hidden'
+        }).start({
+          delay: delay
+        })
+
+  closeCartEl.addEventListener 'click', ->
+    cart.setCloseButtonVisibility(false)
+    cart.setCartSectionVisibility(false)
+    windowWidth = window.innerWidth
+    windowHeight = window.innerHeight
+    for i, item of items
+      do (item) ->
+        item.el.style.visibility = ''
         offset = cumulativeOffset(item.el)
         delay = Math.abs(offset.left - (windowWidth / 2)) / (windowWidth / 2) +
                 (windowHeight - offset.top) / windowHeight

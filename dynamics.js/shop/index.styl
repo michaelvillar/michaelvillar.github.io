@@ -227,6 +227,7 @@ a.item {
   text-align: center
   padding: 50px 30px
   user-select: none
+  overflow-x: hidden
 
   a.item {
     position: relative
@@ -388,6 +389,118 @@ a.item {
       width: 38px
       height: 38px
       pointer-events: none
+    }
+  }
+}
+
+#cartSection {
+  position: fixed
+  top: 0
+  left: 0
+  right: 0
+  bottom: 0
+  font: 13px "Helvetica Neue", "HelveticaNeue", Helvetica, Arial
+  color: #7B7E84
+
+  .items {
+    position: absolute
+    left: 50%
+    margin-left: -167px
+    width: 334px
+    bottom: 240px
+    margin-bottom: 9px
+
+    .item {
+      position: relative
+      width: 100%
+      height: 60px
+      margin-bottom: 9px
+
+      img {
+        width: 40px
+      }
+
+      p {
+        position: absolute
+        top: 16px
+        left: 52px
+      }
+
+      .amount {
+        position: absolute
+        top: 21px
+        right: 0
+        font-size: 15px
+
+        .price {
+          font-family: "HelveticaNeueMedium", "HelveticaNeue-Medium", "Helvetica Neue Medium", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial
+        }
+      }
+    }
+  }
+
+  .footer {
+    position: absolute
+    left: 0
+    right: 0
+    bottom: -100px
+    height: 340px
+    background: #f0f2f4
+    text-shadow: #fff
+    z-index: 5
+
+    dl, .buttons {
+      width: 334px
+      margin: 0 auto
+    }
+
+    dl {
+      margin-top: 13px
+      font-size: 15px
+
+      dt, dd {
+        display: inline-block
+        width: 50%
+        line-height: 1.3em
+      }
+
+      dd {
+        text-align: right
+        font-family: "HelveticaNeueMedium", "HelveticaNeue-Medium", "Helvetica Neue Medium", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial
+      }
+    }
+
+    dl.total {
+      border-top: 1px solid #d3d5d9
+      padding-top: 8px
+      margin-top: 14px
+      font-size: 17px
+      color: #5B5E65
+    }
+
+    .buttons {
+      margin-top: 10px
+      text-align: right
+
+      button.checkout {
+        display: inline-block
+        width: 106px
+        height: 36px
+        background: #53A9E9
+        border-radius: 5px
+        font-size: 18px
+        font-family: "HelveticaNeueMedium", "HelveticaNeue-Medium", "Helvetica Neue Medium", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial
+        color: #fff
+        padding: 0 3px
+        appearance: none
+
+        &:focus, &:active {
+          outline: none
+        }
+        &:active {
+          background-color: #2C7BB5
+        }
+      }
     }
   }
 }
