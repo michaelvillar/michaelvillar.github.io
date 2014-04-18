@@ -47,6 +47,7 @@ logo = (->
   el = document.querySelector('#logo')
   el.addEventListener 'click', ->
     grid.closeCurrentItem()
+    cart.close()
 
   scrollFade = 30
 
@@ -370,9 +371,17 @@ cart = (->
     }).start()
 
   {
-    addItem: addItem,
-    setCloseButtonVisibility: setCloseButtonVisibility,
-    setCartSectionVisibility: setCartSectionVisibility
+    addItem: addItem
+    open: ->
+      fade.show()
+      setCloseButtonVisibility(true)
+      setCartSectionVisibility(true)
+    close: ->
+      setTimeout =>
+        fade.hide()
+      , 450
+      setCloseButtonVisibility(false)
+      setCartSectionVisibility(false)
   }
 )()
 
@@ -589,12 +598,10 @@ grid = (->
     item.load()
 
   cartEl.addEventListener 'click', ->
-    cart.setCloseButtonVisibility(true)
-    setTimeout =>
-      cart.setCartSectionVisibility(true)
-    , 1000
+    cart.open()
     windowWidth = window.innerWidth
     windowHeight = window.innerHeight
+    return
     for i, item of items
       do (item) ->
         item.setDisabled(true)
@@ -616,10 +623,10 @@ grid = (->
         })
 
   closeCartEl.addEventListener 'click', ->
-    cart.setCloseButtonVisibility(false)
-    cart.setCartSectionVisibility(false)
+    cart.close()
     windowWidth = window.innerWidth
     windowHeight = window.innerHeight
+    return
     for i, item of items
       do (item) ->
         item.el.style.visibility = ''

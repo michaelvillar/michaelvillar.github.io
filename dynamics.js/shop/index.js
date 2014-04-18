@@ -58,7 +58,8 @@
     var el, scrollFade, show, updateOffset;
     el = document.querySelector('#logo');
     el.addEventListener('click', function() {
-      return grid.closeCurrentItem();
+      grid.closeCurrentItem();
+      return cart.close();
     });
     scrollFade = 30;
     updateOffset = function(options) {
@@ -458,8 +459,19 @@
     };
     return {
       addItem: addItem,
-      setCloseButtonVisibility: setCloseButtonVisibility,
-      setCartSectionVisibility: setCartSectionVisibility
+      open: function() {
+        fade.show();
+        setCloseButtonVisibility(true);
+        return setCartSectionVisibility(true);
+      },
+      close: function() {
+        var _this = this;
+        setTimeout(function() {
+          return fade.hide();
+        }, 450);
+        setCloseButtonVisibility(false);
+        return setCartSectionVisibility(false);
+      }
     };
   })();
 
@@ -744,14 +756,11 @@
       item.load();
     }
     cartEl.addEventListener('click', function() {
-      var windowHeight, windowWidth, _results,
-        _this = this;
-      cart.setCloseButtonVisibility(true);
-      setTimeout(function() {
-        return cart.setCartSectionVisibility(true);
-      }, 1000);
+      var windowHeight, windowWidth, _results;
+      cart.open();
       windowWidth = window.innerWidth;
       windowHeight = window.innerHeight;
+      return;
       _results = [];
       for (i in items) {
         item = items[i];
@@ -801,10 +810,10 @@
     });
     closeCartEl.addEventListener('click', function() {
       var windowHeight, windowWidth, _results;
-      cart.setCloseButtonVisibility(false);
-      cart.setCartSectionVisibility(false);
+      cart.close();
       windowWidth = window.innerWidth;
       windowHeight = window.innerHeight;
+      return;
       _results = [];
       for (i in items) {
         item = items[i];
