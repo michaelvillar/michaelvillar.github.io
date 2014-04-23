@@ -1,0 +1,4 @@
+*{padding:0;margin:0;border:none}
+body{background:#434a5a}
+.circle{position:absolute;}
+.circle circle{-webkit-transform-origin:50% 50%;-moz-transform-origin:50% 50%;transform-origin:50% 50%}
