@@ -2,7 +2,6 @@
 <html>
 <head>
   <title>Dynamics.js - Example</title>
-  <script src="js/sylvester.js"></script>
   <script src="js/dynamics.js"></script>
   <script src="js/debug.js"></script>
   <style>
@@ -36,18 +35,18 @@
 
   window.addEventListener('click', function(e) {
     // Creating the transform value
-    var transform = "translateX("+(e.pageX - 50)+"px)";
-    transform += "translateY("+(e.pageY - 50)+"px) ";
-    transform += "rotate("+Math.round(Math.random() * 360 - 180)+"deg) ";
-    transform += "skew("+(Math.random() * 2 - 1)+"rad)";
+    properties = {
+      translateX: (e.pageX - 50),
+      translateY: (e.pageY - 50),
+      rotate: Math.round(Math.random() * 360 - 180),
+      skew: (Math.random() * 65)
+    }
 
     // Apply transform on the yellow triangle
-    yellowTriangle.style.transform = yellowTriangle.style['-webkit-transform'] = transform;
+    Dynamics.css(yellowTriangle, properties)
 
     // Start the animation
-    new Dynamics.Animation(triangle, {
-      transform: transform
-    }, {
+    new Dynamics.Animation(triangle, properties, {
       type: Dynamics.Types.Spring,
       frequency: 15,
       friction: 166,

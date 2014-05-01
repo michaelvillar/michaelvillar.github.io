@@ -161,7 +161,7 @@
         }).start();
         _this.circle.style.transform = _this.circle.style.MozTransform = _this.circle.style.webkitTransform = 'scale(0)';
         return showingAnimation = new Dynamics.Animation(_this.circle, {
-          transform: ''
+          transform: 'scale(1)'
         }, {
           type: Dynamics.Types.Spring,
           frequency: 0,

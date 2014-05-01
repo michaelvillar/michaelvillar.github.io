@@ -525,7 +525,7 @@ grid = (->
 
       new Dynamics.Animation(@clonedEl, properties, options).start()
 
-    close: =>
+    close: (callback) =>
       fade.hide()
       logo.updateOffset(animated: true)
       product.hide()
@@ -541,6 +541,9 @@ grid = (->
         frequency: 10,
         duration: 2000
       })
+      setTimeout =>
+        callback()
+      , 500
 
     addToCart: =>
       fade.hide()
@@ -599,7 +602,8 @@ grid = (->
     item.load()
 
   cartEl.addEventListener 'click', ->
-    cart.open()
+    grid.closeCurrentItem ->
+      cart.open()
     windowWidth = window.innerWidth
     windowHeight = window.innerHeight
     return
@@ -649,9 +653,11 @@ grid = (->
           delay: delay
         })
 
-  closeCurrentItem = ->
+  closeCurrentItem = (callback) ->
     if currentItem?
-      currentItem.close()
+      currentItem.close(callback)
+    else
+      callback()
     currentItem = null
 
   addToCartCurrentItem = ->

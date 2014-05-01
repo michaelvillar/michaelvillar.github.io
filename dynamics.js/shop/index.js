@@ -663,8 +663,9 @@
         return new Dynamics.Animation(this.clonedEl, properties, options).start();
       };
 
-      Item.prototype.close = function() {
-        var pos, transform;
+      Item.prototype.close = function(callback) {
+        var pos, transform,
+          _this = this;
         fade.hide();
         logo.updateOffset({
           animated: true
@@ -672,7 +673,7 @@
         product.hide();
         pos = this.absolutePosition();
         transform = "translateX(" + (-parseInt(this.clonedEl.style.left, 10) + pos.left) + "px) translateY(" + (-parseInt(this.clonedEl.style.top, 10) + pos.top) + "px)";
-        return this.animateClonedEl({
+        this.animateClonedEl({
           transform: transform,
           opacity: 1
         }, {
@@ -681,6 +682,9 @@
           frequency: 10,
           duration: 2000
         });
+        return setTimeout(function() {
+          return callback();
+        }, 500);
       };
 
       Item.prototype.addToCart = function() {
@@ -758,7 +762,9 @@
     }
     cartEl.addEventListener('click', function() {
       var windowHeight, windowWidth, _results;
-      cart.open();
+      grid.closeCurrentItem(function() {
+        return cart.open();
+      });
       windowWidth = window.innerWidth;
       windowHeight = window.innerHeight;
       return;
@@ -843,9 +849,11 @@
       }
       return _results;
     });
-    closeCurrentItem = function() {
+    closeCurrentItem = function(callback) {
       if (currentItem != null) {
-        currentItem.close();
+        currentItem.close(callback);
+      } else {
+        callback();
       }
       return currentItem = null;
     };
