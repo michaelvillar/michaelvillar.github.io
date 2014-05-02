@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dynamics.js - Performance</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="user-scalable=no,width=device-width,initial-scale=1,maximum-scale=1">
+  <script src="../js/dynamics.js"></script>
+  <script src="../js/debug.js"></script>
+  <style>
+  .circle {
+    position: relative;
+    background: black;
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+    float: left;
+    clear: left;
+    margin-bottom: 3px;
+  }
+  </style>
+</head>
+<body>
+  <script>
+  anim1 = function(circle, i) {
+    if(!i)
+      i = 0;
+    if(i > 3)
+      return;
+    new Dynamics.Animation(circle, {
+      left: 300,
+      opacity: 0.5
+    }, {
+      type: Dynamics.Types.EaseInOut,
+      duration: 1000,
+      complete: anim2.bind(this, circle, i+1)
+    }).start();
+  };
+
+  anim2 = function(circle, i) {
+    new Dynamics.Animation(circle, {
+      left: 0,
+      opacity: 1
+    }, {
+      type: Dynamics.Types.EaseInOut,
+      duration: 1000,
+      complete: anim1.bind(this, circle, i+1)
+    }).start();
+  };
+
+  for(var i=0; i<150; i++) {
+    var circle = document.createElement('div');
+    circle.className = 'circle';
+    document.body.appendChild(circle);
+
+    anim1(circle);
+  }
+  </script>
+</body>
+</html>

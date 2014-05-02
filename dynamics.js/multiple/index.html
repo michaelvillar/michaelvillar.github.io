@@ -29,35 +29,35 @@
   <div id="square_end" class="square"></div>
   <div id="square" class="square"></div>
   <script>
-  var square = document.getElementById('square');
-
-  Dynamics.css(document.getElementById('square_end'), {
+  dynamic(document.getElementById('square_end')).css({
     translateY: 100,
     scale: 1.8,
     rotate: 45
   })
 
-  new Dynamics.Animation(square, {
+  dSquare = dynamic(document.getElementById('square'))
+  dSquare.delay(500)
+  dSquare.to({
     translateY: 100
   }, {
     type: Dynamics.Types.Gravity,
     gravity: 1000,
     bounce: 30
-  }).start({delay:500})
-
-  new Dynamics.Animation(square, {
+  })
+  dSquare.to({
     scale: 1.8
   }, {
     type: Dynamics.Types.Spring,
     duration: 500
-  }).start({delay:500})
-
-  new Dynamics.Animation(square, {
+  })
+  dSquare.delay(200)
+  dSquare.to({
     rotate: 45
   }, {
     type: Dynamics.Types.EaseInOut,
     duration: 600
-  }).start({delay: 700})
+  })
+  dSquare.start()
   </script>
 </body>
 </html>
