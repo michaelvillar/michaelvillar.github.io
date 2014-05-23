@@ -4,8 +4,8 @@
   <title>Dynamics.js - Multiple tranforms</title>
   <meta charset="utf-8">
   <meta name="viewport" content="user-scalable=no,width=device-width,initial-scale=1,maximum-scale=1">
-  <script src="../js/dynamics.js"></script>
-  <script src="../js/debug.js"></script>
+  <script src="../lib/dynamics.js"></script>
+  <script src="../lib/debug.js"></script>
   <style>
   .square {
     position: absolute;
@@ -40,21 +40,21 @@
   dSquare.to({
     translateY: 100
   }, {
-    type: Dynamics.Types.Gravity,
+    type: dynamic.Gravity,
     gravity: 1000,
     bounce: 30
   })
   dSquare.to({
     scale: 1.8
   }, {
-    type: Dynamics.Types.Spring,
+    type: dynamic.Spring,
     duration: 500
   })
   dSquare.delay(200)
   dSquare.to({
     rotate: 45
   }, {
-    type: Dynamics.Types.EaseInOut,
+    type: dynamic.EaseInOut,
     duration: 600
   })
   dSquare.start()
