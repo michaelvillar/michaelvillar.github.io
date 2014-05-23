@@ -53,33 +53,29 @@
     document.body.appendChild(circle);
     innerCircle = circle.querySelector('.inner');
     outerCircle = circle.querySelector('.outer');
-    Dynamics.css(outerCircle, {
-      transform: "scale(.01)"
+    dynamic(outerCircle).css({
+      scale: 0.01
     });
-    Dynamics.css(innerCircle, {
-      transform: "scale(.01)"
+    dynamic(innerCircle).css({
+      scale: 0.01
     });
-    new Dynamics.Animation(outerCircle, {
-      transform: "scale(1)"
+    dynamic(outerCircle).delay(options.delay).to({
+      scale: 1
     }, {
-      type: Dynamics.Types.EaseInOut,
+      type: dynamic.EaseInOut,
       friction: 200,
       duration: 1000 * 1.1
-    }).start({
-      delay: options.delay
-    });
-    new Dynamics.Animation(innerCircle, {
+    }).start();
+    dynamic(innerCircle).delay(options.delay + 200 * 1.1).to({
       transform: "scale(1.01)"
     }, {
-      type: Dynamics.Types.EaseInOut,
+      type: dynamic.EaseInOut,
       friction: 200,
       duration: 1000 * 1.1,
       complete: function() {
         return circle.parentNode.removeChild(circle);
       }
-    }).start({
-      delay: options.delay + 200 * 1.1
-    });
+    }).start();
     return circle;
   };
 
@@ -110,15 +106,14 @@
       translate[0] = Math.cos(angle) * options.radius;
       translate[1] = Math.sin(angle) * options.radius;
       translate[1] = Math.round(translate[1]);
-      _results.push(new Dynamics.Animation(circle, {
-        transform: "translateX(" + translate[0] + "px) translateY(" + translate[1] + "px)"
+      _results.push(dynamic(circle).delay(delay).to({
+        translateX: translate[0],
+        translateY: translate[1]
       }, {
-        type: Dynamics.Types.EaseInOut,
+        type: dynamic.EaseInOut,
         friction: 200,
         duration: 1200 * 1.2
-      }).start({
-        delay: delay
-      }));
+      }).start());
     }
     return _results;
   };
