@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dynamics.js - Object Example</title>
+  <script src="../lib/dynamics.js"></script>
+  <style>
+  * {
+    font-family: Helvetica;
+  }
+  </style>
+</head>
+<body>
+  <p>Animate `propA` of `{ propA: 100 }` to `{ propA: 200 }` with a Spring animation</p>
+  <code></code>
+  <script>
+  code = document.querySelector('code')
+  object = { propA: 100 }
+  dynamic(object).to({
+    propA: 200
+  }, {
+    type: dynamic.Spring,
+    frequency: 15,
+    friction: 166,
+    anticipationStrength: 115,
+    anticipationSize: 10,
+    duration: 1000,
+    change: function() {
+      code.innerHTML = JSON.stringify(object)
+    }
+  }).start();
+  </script>
+</body>
+</html>

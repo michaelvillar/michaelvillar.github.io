@@ -1338,6 +1338,7 @@
 
   Loop = {
     tweens: [],
+    tweensToRemoveAtNextTick: [],
     running: false,
     start: function() {
       this.running = true;
@@ -1347,7 +1348,7 @@
       return this.running = false;
     },
     tick: function(ts) {
-      var animation, el, elProperties, found, k, properties, propertiesByEls, tween, tweens, v, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1;
+      var animation, el, elProperties, found, k, properties, propertiesByEls, tween, tweens, v, _base, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref, _ref1;
       if (!this.running) {
         return;
       }
@@ -1399,6 +1400,13 @@
           }
         }
       }
+      for (_m = 0, _len4 = tweens.length; _m < _len4; _m++) {
+        tween = tweens[_m];
+        if (typeof (_base = tween.options).change === "function") {
+          _base.change(tween.t, tween.value);
+        }
+      }
+      this.removeUselessTweens();
       return requestAnimationFrame(this.tick.bind(this));
     },
     add: function(tween) {
@@ -1410,7 +1418,16 @@
       }
     },
     remove: function(tween) {
-      this.tweens.splice(this.tweens.indexOf(tween), 1);
+      return this.tweensToRemoveAtNextTick.push(tween);
+    },
+    removeUselessTweens: function() {
+      var tween, _i, _len, _ref;
+      _ref = this.tweensToRemoveAtNextTick;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        tween = _ref[_i];
+        this.tweens.splice(this.tweens.indexOf(tween), 1);
+      }
+      this.tweensToRemoveAtNextTick = [];
       if (this.running && this.tweens.length === 0) {
         return this.stop();
       }
@@ -1677,7 +1694,7 @@
     };
 
     Tween.prototype.tick = function(ts) {
-      var dTs, _base, _base1;
+      var dTs, _base;
       if (this.stopped) {
         Loop.remove(this);
         return;
@@ -1689,14 +1706,14 @@
       } else {
         this.ts = ts;
       }
-      this.value = this.dynamic.at(this.t)[1];
-      if (typeof (_base = this.options).change === "function") {
-        _base.change(this.t, this.value);
+      if (this.t > 1) {
+        this.t = 1;
       }
-      if (this.t >= 1) {
+      this.value = this.dynamic.at(this.t)[1];
+      if (this.t === 1) {
         Loop.remove(this);
-        if (typeof (_base1 = this.options).complete === "function") {
-          _base1.complete();
+        if (typeof (_base = this.options).complete === "function") {
+          _base.complete();
         }
         this.stopped = true;
         return this.animating = false;
