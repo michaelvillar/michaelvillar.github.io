@@ -16,27 +16,34 @@ var viewButtonLabel = viewButton.querySelector(".label");
 
 (function() {
   var animated = false;
+  var animating = false;
   var animationTimeout;
-  var animation = new Dynamics.Animation(viewButtonIconArrow, {
-    transform: "translateX(3px) translateY(-3px)"
-  }, {
-    type: Dynamics.Types.GravityWithForce,
-    bounce: 60,
-    gravity: 1750,
-    complete: function() {
-      if(!animated)
-        return;
-      animationTimeout = setTimeout(function() {
-        animation.start();
-      }, 500);
-    }
-  });
+  var arrow = dynamic(viewButtonIconArrow);
+  var animateArrow = function() {
+    if(arrow.isAnimating())
+      return;
+    arrow.to({
+      translateX: 3,
+      translateY: -3
+    }, {
+      type: dynamic.GravityWithForce,
+      bounce: 60,
+      gravity: 1750,
+      complete: function() {
+        if(!animated)
+          return;
+        animationTimeout = setTimeout(function() {
+          animateArrow();
+        }, 500);
+      }
+    }).start();
+  }
   var animateIconArrow = function(animate) {
     if(animate == animated)
       return;
     animated = animate;
     if(animate)
-      animation.start();
+      animateArrow()
     else {
       if(animationTimeout)
         clearTimeout(animationTimeout);
@@ -51,89 +58,93 @@ var viewButtonLabel = viewButton.querySelector(".label");
 })();
 
 var initialState = function() {
-  Dynamics.css(profileEl, {
-    transform: "translateY(40px) scale(0)",
+  dynamic(profileEl).css({
+    translateY: 40,
+    scale: 0,
     opacity: 0
   });
-  Dynamics.css(headerEl, {
-    transform: "translateY(-152px)"
+  dynamic(headerEl).css({
+    translateY: -152
   });
-  Dynamics.css(iconEl, {
-    transform: "scale(0)"
+  dynamic(iconEl).css({
+    scale: 0
   });
   var els = [h1El, h2El];
   for(var i in els) {
-    Dynamics.css(els[i], {
-      transform: "translateY(-20px)",
+    dynamic(els[i]).css({
+      translateY: -20,
       opacity: 0
     });
   }
-  Dynamics.css(statsEl, {
-    transform: "translateY(-57px)",
+  dynamic(statsEl).css({
+    translateY: -57,
     opacity: 0
   });
   for(var i=0; i<statsColsEl.length; i++) {
-    Dynamics.css(statsColsEl[i], {
-      transform: "translateY(-25px)",
+    dynamic(statsColsEl[i]).css({
+      translateY: -25,
       opacity: 0
     });
   }
-  Dynamics.css(viewButton, {
-    transform: "translateY(-25px)",
+  dynamic(viewButton).css({
+    translateY: -25,
     opacity: 0
   });
-  Dynamics.css(viewButtonIcon, {
-    transform: "translateX(16px)",
+  dynamic(viewButtonIcon).css({
+    translateX: 16,
     opacity: 0
   });
-  Dynamics.css(viewButtonLabel, {
-    transform: "translateX(-8px)"
+  dynamic(viewButtonLabel).css({
+    translateX: -8
   });
   for(var i=0; i<descriptionEls.length; i++) {
-    Dynamics.css(descriptionEls[i], {
-      transform: "translateX(50px)",
+    dynamic(descriptionEls[i]).css({
+      translateX: 50,
       opacity: 0
     });
   }
   for(var i=1; i<navLinkSpanEls.length; i++) {
-    Dynamics.css(navLinkSpanEls[i], {
-      transform: "scale(.1)",
+    dynamic(navLinkSpanEls[i]).css({
+      scale: 0.1,
       opacity: 0
     });
   }
 }
 
 var show = function() {
-  new Dynamics.Animation(profileEl, {
-    transform: "scale(1)",
+  dynamic(profileEl).to({
+    scale: 1,
+    translateY: 0,
     opacity: 1
   }, {
-    type: Dynamics.Types.Spring,
+    type: dynamic.Spring,
     frequency: 19,
     friction: 578,
     anticipationStrength: 0,
     anticipationSize: 0,
     duration: 1366
   }).start();
-  setTimeout(showElement.bind(this, headerEl), 300);
-  setTimeout(showElement.bind(this, iconEl), 300);
-  setTimeout(showElement.bind(this, h1El), 500);
-  setTimeout(showElement.bind(this, h2El), 550);
-  setTimeout(showElement.bind(this, statsEl), 600);
+  showElement(headerEl, 300);
+  showElement(iconEl, 300);
+  showElement(h1El, 500);
+  showElement(h2El, 550);
+  showElement(statsEl, 600);
   for(var i=0; i<statsColsEl.length; i++) {
-    setTimeout(showElement.bind(this, statsColsEl[i]), 700 + i * 100);
+    showElement(statsColsEl[i], 700 + i * 100);
   }
-  setTimeout(showElement.bind(this, viewButton), 1000);
-  setTimeout(showElement.bind(this, viewButtonIcon), 1000);
-  setTimeout(showElement.bind(this, viewButtonLabel), 1000);
+  showElement(viewButton, 1000);
+  showElement(viewButtonIcon, 1000);
+  showElement(viewButtonLabel, 1000);
 };
 
-var showElement = function(el) {
-  new Dynamics.Animation(el, {
-    transform: "none",
+var showElement = function(el, delay) {
+  dynamic(el).delay(delay).to({
+    translateY: 0,
+    translateX: 0,
+    scale: 1,
     opacity: 1
   }, {
-    type: Dynamics.Types.Spring,
+    type: dynamic.Spring,
     frequency: 5,
     friction: 200,
     anticipationStrength: 0,
@@ -149,7 +160,7 @@ var showElement = function(el) {
   ];
   var current = 0;
   var options = {
-    type: Dynamics.Types.Spring,
+    type: dynamic.Spring,
     frequency: 19,
     friction: 578,
     anticipationStrength: 0,
@@ -157,7 +168,7 @@ var showElement = function(el) {
     duration: 1366
   };
   var linkOptions = {
-    type: Dynamics.Types.Spring,
+    type: dynamic.Spring,
     frequency: 15,
     friction: 300,
     anticipationStrength: 0,
@@ -170,12 +181,12 @@ var showElement = function(el) {
     headerDivEls[step].classList.add('active');
     headerDivEls[current].classList.remove('active');
 
-    new Dynamics.Animation(navLinkSpanEls[current], {
-      transform: "scale(.1)",
+    dynamic(navLinkSpanEls[current]).to({
+      scale: 0.1,
       opacity: 0
     }, linkOptions).start();
-    new Dynamics.Animation(navLinkSpanEls[step], {
-      transform: "none",
+    dynamic(navLinkSpanEls[step]).to({
+      scale: 1,
       opacity: 1
     }, linkOptions).start();
 
@@ -184,24 +195,20 @@ var showElement = function(el) {
     var elements = steps[current];
     for(var i=0;i<elements.length;i++) {
       var el = elements[i];
-      setTimeout(function(el) {
-        new Dynamics.Animation(el, {
-          transform: (direction ? "translateX(-50px)" : "translateX(50px)"),
-          opacity: 0
-        }, options).start();
-      }.bind(this, el), delay);
+      dynamic(el).delay(delay).to({
+        translateX: (direction ? -50 : 50),
+        opacity: 0
+      }, options).start();
       delay += 50;
     }
 
     var elements = steps[step];
     for(var i=0;i<elements.length;i++) {
       var el = elements[i];
-      setTimeout(function(el) {
-        new Dynamics.Animation(el, {
-          transform: "none",
-          opacity: 1
-        }, options).start();
-      }.bind(this, el), delay);
+      dynamic(el).delay(delay).to({
+        translateX: 0,
+        opacity: 1
+      }, options).start();
       delay += 50;
     }
 

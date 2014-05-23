@@ -111,7 +111,7 @@
       if (this.r) {
         canvas.width = canvas.width * this.r;
         canvas.height = canvas.height * this.r;
-        Dynamics.css(canvas, {
+        dynamic(canvas).css({
           scale: 1 / this.r,
           'transform-origin': "0 0"
         });
@@ -632,7 +632,7 @@
       contentEl.appendChild(settingsEl);
       this.el.appendChild(contentEl);
       this.dynamicsClasses = [];
-      _ref = Dynamics.Types;
+      _ref = [dynamic.Spring, dynamic.SelfSpring, dynamic.Gravity, dynamic.GravityWithForce, dynamic.Linear, dynamic.Bezier, dynamic.EaseInOut];
       for (k in _ref) {
         v = _ref[k];
         this.dynamicsClasses.push(v);
@@ -646,7 +646,7 @@
           this.dynamicsClass = aDynamicsClass;
         }
         option = document.createElement('option');
-        option.innerHTML = "Dynamics.Types." + (getName(aDynamicsClass));
+        option.innerHTML = "dynamic." + (getName(aDynamicsClass));
         option.value = getName(aDynamicsClass);
         this.select.appendChild(option);
       }
@@ -664,15 +664,15 @@
     };
 
     UIPanel.prototype.open = function() {
-      Dynamics.css(this.el, {
+      dynamic(this.el).css({
         scale: 0.7
       });
       document.body.appendChild(this.el);
-      return new Dynamics.Animation(this.el, {
+      return dynamic(this.el).to({
         scale: 1,
         opacity: 1
       }, {
-        type: Dynamics.Types.Spring,
+        type: dynamic.Spring,
         frequency: 6,
         friction: 130,
         anticipationStrength: 0,
@@ -693,7 +693,7 @@
     UIPanel.prototype.selectDidChange = function() {
       var name;
       name = this.select.options[this.select.selectedIndex].value;
-      this.dynamicsClass = eval("Dynamics.Types." + name);
+      this.dynamicsClass = eval("dynamic." + name);
       this.updateOptions();
       return this.update();
     };
@@ -788,11 +788,11 @@
     UIPanel.prototype.close = function() {
       var _this = this;
       this.hidden = true;
-      return new Dynamics.Animation(this.el, {
+      return dynamic(this.el).to({
         scale: 0.1,
         opacity: 0
       }, {
-        type: Dynamics.Types.Spring,
+        type: dynamic.Spring,
         frequency: 6,
         friction: 130,
         anticipationStrength: 0,
