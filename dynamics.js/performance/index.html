@@ -4,9 +4,12 @@
   <title>Dynamics.js - Performance</title>
   <meta charset="utf-8">
   <meta name="viewport" content="user-scalable=no,width=device-width,initial-scale=1,maximum-scale=1">
-  <script src="../js/dynamics.js"></script>
-  <script src="../js/debug.js"></script>
+  <script src="../lib/dynamics.js"></script>
+  <script src="../lib/debug.js"></script>
   <style>
+  h1 {
+    font: 15px Helvetica;
+  }
   .circle {
     position: relative;
     background: black;
@@ -20,28 +23,29 @@
   </style>
 </head>
 <body>
+  <h1>150 simultaneous animations</h1>
   <script>
   anim1 = function(circle, i) {
     if(!i)
       i = 0;
     if(i > 3)
       return;
-    new Dynamics.Animation(circle, {
+    dynamic(circle).to({
       left: 300,
       opacity: 0.5
     }, {
-      type: Dynamics.Types.EaseInOut,
+      type: dynamic.EaseInOut,
       duration: 1000,
       complete: anim2.bind(this, circle, i+1)
     }).start();
   };
 
   anim2 = function(circle, i) {
-    new Dynamics.Animation(circle, {
+    dynamic(circle).to({
       left: 0,
       opacity: 1
     }, {
-      type: Dynamics.Types.EaseInOut,
+      type: dynamic.EaseInOut,
       duration: 1000,
       complete: anim1.bind(this, circle, i+1)
     }).start();
