@@ -3,7 +3,7 @@
   var Loading, SOCKS_COUNT, cart, cumulativeOffset, fade, grid, loading, logo, product,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-  SOCKS_COUNT = 34;
+  SOCKS_COUNT = 1;
 
   fade = (function() {
     var el, hidden, hide, hideTimeout, show;
@@ -75,11 +75,11 @@
       }
       scrollY = Math.min(window.scrollY, scrollFade);
       offset = scrollY / scrollFade;
-      new Dynamics.Animation(el, {
+      dynamic(el).to({
         opacity: 1 - offset,
-        transform: "translateY(" + (-offset * 10) + "px)"
+        translateY: -offset * 10
       }, {
-        type: Dynamics.Types.EaseInOut,
+        type: dynamic.EaseInOut,
         duration: 300,
         animated: options.animated
       }).start();
@@ -90,11 +90,11 @@
       }
     };
     show = function() {
-      new Dynamics.Animation(el, {
+      dynamic(el).to({
         opacity: 1,
-        transform: "none"
+        translateY: 0
       }, {
-        type: Dynamics.Types.Spring,
+        type: dynamic.Spring,
         duration: 500
       }).start();
       return el.className = "";
@@ -114,16 +114,23 @@
     closeButtonSpan = closeButtonEl.querySelector('span');
     closeButtonSpanVisible = false;
     button = el.querySelector('button');
-    closeButtonSpanStates = ['translateY(-48px)', 'translateX(-48px) rotate(-90deg)'];
-    Dynamics.css(closeButtonSpan, {
-      transform: closeButtonSpanStates[1]
-    });
+    closeButtonSpanStates = [
+      {
+        translateY: -48
+      }, {
+        translateX: -48,
+        rotate: -90
+      }
+    ];
+    dynamic(closeButtonSpan).css(closeButtonSpanStates[1]);
     closeButtonEl.addEventListener('mouseover', function() {
       closeButtonSpanVisible = true;
-      return new Dynamics.Animation(closeButtonSpan, {
-        transform: 'none'
+      return dynamic(closeButtonSpan).to({
+        translateX: 0,
+        translateY: 0,
+        rotate: 0
       }, {
-        type: Dynamics.Types.Spring,
+        type: dynamic.Spring,
         frequency: 20,
         friction: 800,
         duration: 2000
@@ -146,21 +153,17 @@
         options.complete = function() {
           return old.parentNode.removeChild(old);
         };
-        new Dynamics.Animation(old, properties, options).start();
+        dynamic(old).to(properties, options).start();
       } else {
         old.parentNode.removeChild(old);
       }
       closeButtonSpan = closeButtonSpan.cloneNode();
-      Dynamics.css(closeButtonSpan, {
-        transform: closeButtonSpanStates[1]
-      });
+      dynamic(closeButtonSpan).css(closeButtonSpanStates[1]);
       return closeButtonEl.appendChild(closeButtonSpan);
     };
     closeButtonEl.addEventListener('mouseout', function() {
-      return hideCloseButton({
-        transform: closeButtonSpanStates[0]
-      }, {
-        type: Dynamics.Types.Spring,
+      return hideCloseButton(closeButtonSpanStates[0], {
+        type: dynamic.Spring,
         frequency: 0,
         friction: 490,
         anticipationStrength: 98,
@@ -169,23 +172,20 @@
       });
     });
     show = function() {
-      var i, text, _i, _ref, _results,
-        _this = this;
+      var i, text, _i, _ref, _results;
       el.style.pointerEvents = 'auto';
       _results = [];
       for (i = _i = 0, _ref = texts.length - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
         text = texts[i];
-        _results.push(setTimeout((function(text) {
-          return new Dynamics.Animation(text, {
-            opacity: 1,
-            transform: 'none'
-          }, {
-            type: Dynamics.Types.Spring,
-            frequency: 30,
-            friction: 800,
-            duration: 2000
-          }).start();
-        }).bind(this, text), 500 + i * 70));
+        _results.push(dynamic(text).delay(500 + i * 70).to({
+          opacity: 1,
+          translateY: 0
+        }, {
+          type: dynamic.Spring,
+          frequency: 30,
+          friction: 800,
+          duration: 2000
+        }).start());
       }
       return _results;
     };
@@ -202,13 +202,13 @@
         if (text.parentNode.tagName.toLowerCase() === 'h2') {
           h = 24;
         } else {
-          h = 18;
+          h = 32;
         }
-        _results.push(new Dynamics.Animation(text, {
+        _results.push(dynamic(text).to({
           opacity: 0,
-          transform: "translateY(" + h + "px)"
+          translateY: h
         }, {
-          type: Dynamics.Types.EaseInOut,
+          type: dynamic.EaseInOut,
           duration: 200,
           animated: animated
         }).start());
@@ -252,20 +252,18 @@
       var dot;
       dot = this.dots[this.current];
       if (this.stopping) {
-        new Dynamics.Animation(dot, {
+        dynamic(dot).delay(350).to({
           opacity: 0
         }, {
-          type: Dynamics.Types.EaseInOut,
+          type: dynamic.EaseInOut,
           duration: 300
-        }).start({
-          delay: 350
-        });
+        }).start();
         this.hiddenIndexes.push(this.current);
       }
-      new Dynamics.Animation(dot, {
-        transform: "translateY(-10px)"
+      dynamic(dot).to({
+        translateY: -10
       }, {
-        type: Dynamics.Types.GravityWithForce,
+        type: dynamic.GravityWithForce,
         bounce: 60,
         gravity: 1300
       }).start();
@@ -319,44 +317,40 @@
       }
       show = function() {
         cartSection.el.style.pointerEvents = 'auto';
-        new Dynamics.Animation(cartSection.footer, {
-          transform: "none"
+        dynamic(cartSection.footer).to({
+          translateY: 0
         }, {
-          type: Dynamics.Types.Spring,
+          type: dynamic.Spring,
           frequency: 25,
           friction: 1200,
           duration: 3500,
           animated: options.animated
         }).start();
-        return new Dynamics.Animation(cartSection.items, {
-          transform: "none",
+        return dynamic(cartSection.items).delay(options.animated ? 100 : 0).to({
+          translateY: 0,
           opacity: 1
         }, {
-          type: Dynamics.Types.Spring,
+          type: dynamic.Spring,
           frequency: 25,
           friction: 1200,
           duration: 3500,
           animated: options.animated
-        }).start({
-          delay: options.animated ? 100 : 0
-        });
+        }).start();
       };
       hide = function() {
         cartSection.el.style.pointerEvents = 'none';
-        new Dynamics.Animation(cartSection.footer, {
-          transform: "translateY(260px)"
+        dynamic(cartSection.footer).delay(options.animated ? 200 : 0).to({
+          translateY: 260
         }, {
-          type: Dynamics.Types.EaseInOut,
+          type: dynamic.EaseInOut,
           duration: 700,
           animated: options.animated
-        }).start({
-          delay: options.animated ? 200 : 0
-        });
-        return new Dynamics.Animation(cartSection.items, {
-          transform: "translateY(260px)",
+        }).start();
+        return dynamic(cartSection.items).to({
+          translateY: 260,
           opacity: 0
         }, {
-          type: Dynamics.Types.EaseInOut,
+          type: dynamic.EaseInOut,
           duration: 700,
           animated: options.animated
         }).start();
@@ -380,39 +374,35 @@
         options.animated = true;
       }
       opacityAnimationOptions = {
-        type: Dynamics.Types.EaseInOut,
+        type: dynamic.EaseInOut,
         duration: 200,
         animated: options.animated
       };
       showElement = function(el) {
-        new Dynamics.Animation(el, {
-          transform: "none"
+        dynamic(el).delay(150).to({
+          scaleX: 1
         }, {
-          type: Dynamics.Types.Spring,
+          type: dynamic.Spring,
           frequency: 25,
           friction: 300,
           duration: 700,
           animated: options.animated
-        }).start({
-          delay: 150
-        });
-        return new Dynamics.Animation(el, {
+        }).start();
+        return dynamic(el).to({
           opacity: 1
         }, opacityAnimationOptions).start();
       };
       hideElement = function(el) {
-        new Dynamics.Animation(el, {
-          transform: "scaleX(.01)"
+        dynamic(el).to({
+          scaleX: 0.01
         }, {
-          type: Dynamics.Types.EaseInOut,
+          type: dynamic.EaseInOut,
           duration: 300,
           animated: options.animated
         }).start();
-        return new Dynamics.Animation(el, {
+        return dynamic(el).delay(options.animated ? 100 : void 0).to({
           opacity: 0
-        }, opacityAnimationOptions).start({
-          delay: options.animated ? 100 : void 0
-        });
+        }, opacityAnimationOptions).start();
       };
       if (visible) {
         showElement(closeEl);
@@ -427,34 +417,34 @@
     });
     addItem = function(item) {
       if (currentCartLabelEl) {
-        new Dynamics.Animation(currentCartLabelEl, {
-          transform: 'translateY(6px)',
+        dynamic(currentCartLabelEl).to({
+          translateY: 6,
           opacity: 0
         }, {
-          type: Dynamics.Types.EaseInOut,
+          type: dynamic.EaseInOut,
           duration: 250
         }).start();
       }
       items.push(item);
       currentCartLabelEl = cartLabelEl.cloneNode();
       currentCartLabelEl.innerHTML = items.length;
-      Dynamics.css(currentCartLabelEl, {
-        transform: 'translateY(-6px)',
+      dynamic(currentCartLabelEl).css({
+        translateY: -6,
         opacity: 0
       });
       cartEl.appendChild(currentCartLabelEl);
       cartEl.className = 'filled';
-      new Dynamics.Animation(currentCartLabelEl, {
-        transform: "none"
+      dynamic(currentCartLabelEl).to({
+        translateY: 0
       }, {
-        type: Dynamics.Types.Gravity,
+        type: dynamic.Gravity,
         bounce: 60,
         gravity: 1300
       }).start();
-      return new Dynamics.Animation(currentCartLabelEl, {
+      return dynamic(currentCartLabelEl).to({
         opacity: 1
       }, {
-        type: Dynamics.Types.EaseInOut,
+        type: dynamic.EaseInOut,
         duration: 250
       }).start();
     };
@@ -529,11 +519,11 @@
         if (this.disabled) {
           return;
         }
-        return new Dynamics.Animation(this.el, {
-          transform: "scale(1.18)",
+        return dynamic(this.el).to({
+          scale: 1.18,
           opacity: 1
         }, {
-          type: Dynamics.Types.Spring,
+          type: dynamic.Spring,
           frequency: 25,
           duration: 300
         }).start();
@@ -543,31 +533,29 @@
         if (this.disabled) {
           return;
         }
-        return new Dynamics.Animation(this.el, {
-          transform: "none"
+        return dynamic(this.el).to({
+          scale: 1
         }, {
-          type: Dynamics.Types.Spring,
+          type: dynamic.Spring,
           duration: 1500
         }).start();
       };
 
       Item.prototype.show = function() {
-        Dynamics.css(this.el, {
+        dynamic(this.el).css({
           opacity: 0,
-          transform: "scale(.01)"
+          scale: 0.01
         });
         gridEl.appendChild(this.el);
-        return new Dynamics.Animation(this.el, {
-          transform: "scale(1)",
+        return dynamic(this.el).delay(this.index * 20).to({
+          scale: 1,
           opacity: 1
         }, {
-          type: Dynamics.Types.Spring,
+          type: dynamic.Spring,
           friction: 500,
           frequency: 25,
           duration: 2500
-        }).start({
-          delay: this.index * 20
-        });
+        }).start();
       };
 
       Item.prototype.absolutePosition = function() {
@@ -591,7 +579,7 @@
         pos = this.absolutePosition();
         this.clonedEl = this.el.cloneNode(true);
         this.clonedEl.addEventListener('click', this.close);
-        Dynamics.css(this.clonedEl, {
+        dynamic(this.clonedEl).css({
           position: 'absolute',
           top: pos.top,
           left: pos.left,
@@ -599,11 +587,13 @@
         });
         productEl.appendChild(this.clonedEl);
         this.el.classList.add('hidden');
-        new Dynamics.Animation(this.clonedEl, {
-          transform: "translateX(" + (-pos.left + 40) + "px) translateY(" + (-pos.top + 60) + "px) scale(2)",
+        dynamic(this.clonedEl).to({
+          translateX: -pos.left + 40,
+          translateY: -pos.top + 60,
+          scale: 2,
           opacity: 1
         }, {
-          type: Dynamics.Types.Spring,
+          type: dynamic.Spring,
           friction: 600,
           frequency: 10,
           anticipationSize: 14,
@@ -626,7 +616,7 @@
           noAnimation = true;
         }
         setTimeout(function() {
-          return Dynamics.css(_this.clonedEl, {
+          return dynamic(_this.clonedEl).css({
             zIndex: 1
           });
         }, 400);
@@ -636,19 +626,19 @@
         cloneElPos.left += window.scrollX;
         productEl.removeChild(this.clonedEl);
         document.body.appendChild(this.clonedEl);
-        Dynamics.css(this.clonedEl, {
+        dynamic(this.clonedEl).css({
           top: cloneElPos.top,
           left: cloneElPos.left
         });
         options.complete = function() {
           if (!noAnimation) {
-            Dynamics.css(_this.el, {
-              transform: 'scale(.01)'
+            dynamic(_this.el).css({
+              scale: 0.01
             });
-            new Dynamics.Animation(_this.el, {
-              transform: 'none'
+            dynamic(_this.el).to({
+              scale: 1
             }, {
-              type: Dynamics.Types.Spring,
+              type: dynamic.Spring,
               friction: 600,
               frequency: 20,
               anticipationSize: 14,
@@ -660,11 +650,11 @@
           document.body.removeChild(_this.clonedEl);
           return _this.clonedEl = null;
         };
-        return new Dynamics.Animation(this.clonedEl, properties, options).start();
+        return dynamic(this.clonedEl).to(properties, options).start();
       };
 
       Item.prototype.close = function(callback) {
-        var pos, transform,
+        var pos,
           _this = this;
         fade.hide();
         logo.updateOffset({
@@ -672,23 +662,24 @@
         });
         product.hide();
         pos = this.absolutePosition();
-        transform = "translateX(" + (-parseInt(this.clonedEl.style.left, 10) + pos.left) + "px) translateY(" + (-parseInt(this.clonedEl.style.top, 10) + pos.top) + "px)";
         this.animateClonedEl({
-          transform: transform,
+          translateX: -parseInt(this.clonedEl.style.left, 10) + pos.left,
+          translateY: -parseInt(this.clonedEl.style.top, 10) + pos.top,
+          scale: 1,
           opacity: 1
         }, {
-          type: Dynamics.Types.Spring,
+          type: dynamic.Spring,
           friction: 600,
           frequency: 10,
           duration: 2000
         });
         return setTimeout(function() {
-          return callback();
+          return typeof callback === "function" ? callback() : void 0;
         }, 500);
       };
 
       Item.prototype.addToCart = function() {
-        var offset, pos, transform;
+        var offset, pos, properties;
         fade.hide();
         logo.updateOffset({
           animated: true
@@ -697,21 +688,19 @@
         pos = cumulativeOffset(this.el);
         offset = cumulativeOffset(cartEl);
         offset.left += 27;
-        transform = "translateX(" + (offset.left - pos.left - 32) + "px) translateY(" + (offset.top - pos.top - 48) + "px) scale(.2)";
-        console.log(pos, offset);
-        console.log(transform);
-        new Dynamics.Animation(this.clonedEl, {
+        properties = {
+          translateX: offset.left - pos.left - 32,
+          translateY: offset.top - pos.top - 48,
+          scale: 0.2
+        };
+        dynamic(this.clonedEl).delay(400).to({
           opacity: 0
         }, {
-          type: Dynamics.Types.EaseInOut,
+          type: dynamic.EaseInOut,
           duration: 300
-        }).start({
-          delay: 400
-        });
-        return this.animateClonedEl({
-          transform: transform
-        }, {
-          type: Dynamics.Types.Spring,
+        }).start();
+        return this.animateClonedEl(properties, {
+          type: dynamic.Spring,
           frequency: 3,
           friction: 200,
           anticipationStrength: 67,
@@ -779,10 +768,12 @@
           delay = Math.abs(offset.left - (windowWidth / 2)) / (windowWidth / 2) + offset.top / windowHeight;
           delay *= 500;
           translateX = offset.left - (windowWidth / 2);
-          return new Dynamics.Animation(item.el, {
-            transform: "translateY(-" + (offset.top + 160) + "px) translateX(" + translateX + "px) rotate(" + (Math.round(Math.random() * 90 - 45)) + "deg)"
+          return dynamic(item.el).delay(delay).to({
+            translateY: -offset.top + 160,
+            translateX: translateX,
+            rotate: Math.round(Math.random() * 90 - 45)
           }, {
-            type: Dynamics.Types.Bezier,
+            type: dynamic.Bezier,
             duration: 450,
             points: [
               {
@@ -808,46 +799,16 @@
             complete: function() {
               return item.el.style.visibility = 'hidden';
             }
-          }).start({
-            delay: delay
-          });
+          }).start();
         })(item));
       }
       return _results;
     });
     closeCartEl.addEventListener('click', function() {
-      var windowHeight, windowWidth, _results;
+      var windowHeight, windowWidth;
       cart.close();
       windowWidth = window.innerWidth;
-      windowHeight = window.innerHeight;
-      return;
-      _results = [];
-      for (i in items) {
-        item = items[i];
-        _results.push((function(item) {
-          var delay, offset, translateX,
-            _this = this;
-          item.el.style.visibility = '';
-          offset = cumulativeOffset(item.el);
-          delay = Math.abs(offset.left - (windowWidth / 2)) / (windowWidth / 2) + (windowHeight - offset.top) / windowHeight;
-          delay *= 500;
-          translateX = offset.left - (windowWidth / 2);
-          return new Dynamics.Animation(item.el, {
-            transform: "none"
-          }, {
-            type: Dynamics.Types.Spring,
-            frequency: 3,
-            friction: 200,
-            duration: 700,
-            complete: function() {
-              return item.setDisabled(false);
-            }
-          }).start({
-            delay: delay
-          });
-        })(item));
-      }
-      return _results;
+      return windowHeight = window.innerHeight;
     });
     closeCurrentItem = function(callback) {
       if (currentItem != null) {

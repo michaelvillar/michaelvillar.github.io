@@ -84,34 +84,34 @@
         this.options[k] = v;
       }
       if (this.options.type) {
-        this.options.type = eval("Dynamics.Types." + this.options.type);
+        this.options.type = eval("dynamic." + this.options.type);
       }
       this.createAnimation();
       this.update();
     }
 
-    App.prototype.update = function() {
-      var k, options, v, _ref;
-      if (!this.animation) {
+    App.prototype.update = function(options) {
+      var k, urlOptions, v, _ref;
+      if (!this.circle) {
         return;
       }
-      this.codeSection.innerHTML = this.code();
-      options = {};
-      _ref = this.animation.options;
+      this.codeSection.innerHTML = this.code(options);
+      urlOptions = {};
+      _ref = options != null ? options : this.to.options;
       for (k in _ref) {
         v = _ref[k];
         if (k === 'debugName' || v === null || (typeof v === 'function' && k !== 'type')) {
           continue;
         }
         if (k === 'type') {
-          options[k] = v.name;
+          urlOptions[k] = v.name;
         } else if (k === 'points') {
-          options[k] = JSON.stringify(v);
+          urlOptions[k] = JSON.stringify(v);
         } else {
-          options[k] = v;
+          urlOptions[k] = v;
         }
       }
-      Tools.saveValues(options);
+      Tools.saveValues(urlOptions);
       if (this.animationTimeout) {
         clearTimeout(this.animationTimeout);
       }
@@ -119,7 +119,7 @@
     };
 
     App.prototype.animate = function() {
-      return this.animation.start();
+      return this.circle.to(this.to.to, this.to.options).start();
     };
 
     App.prototype.createAnimation = function() {
@@ -137,19 +137,19 @@
       }
       options.debugName = 'animation1';
       options.complete = function(animation) {
-        var destroyingAnimation, showingAnimation, toDestroyCircle, transform;
+        var toDestroyCircle, transform;
         toDestroyCircle = document.createElement('div');
         toDestroyCircle.classList.add('circle');
         transform = 'scale(0)';
-        if (!animation.dynamic().returnsToSelf) {
+        if (true) {
           toDestroyCircle.style.transform = toDestroyCircle.style.MozTransform = toDestroyCircle.style.webkitTransform = 'translateX(350px)';
           transform = "translateX(350px) " + transform;
         }
         _this.demoSection.appendChild(toDestroyCircle);
-        destroyingAnimation = new Dynamics.Animation(toDestroyCircle, {
+        dynamic(toDestroyCircle).to({
           transform: transform
         }, {
-          type: Dynamics.Types.Spring,
+          type: dynamic.Spring,
           frequency: 0,
           friction: 600,
           anticipationStrength: 100,
@@ -159,11 +159,13 @@
             return _this.demoSection.removeChild(toDestroyCircle);
           }
         }).start();
-        _this.circle.style.transform = _this.circle.style.MozTransform = _this.circle.style.webkitTransform = 'scale(0)';
-        return showingAnimation = new Dynamics.Animation(_this.circle, {
+        _this.circle.css({
+          transform: 'scale(0)'
+        });
+        return _this.circle.to({
           transform: 'scale(1)'
         }, {
-          type: Dynamics.Types.Spring,
+          type: dynamic.Spring,
           frequency: 0,
           friction: 600,
           anticipationStrength: 100,
@@ -172,27 +174,34 @@
         }).start();
       };
       options.optionsChanged = this.update;
-      return window.anim = this.animation = new Dynamics.Animation(this.circle, to, options);
+      return this.to = {
+        to: to,
+        options: options
+      };
     };
 
     App.prototype.createCircle = function() {
-      var _this = this;
+      var circle,
+        _this = this;
       if (this.circle) {
         return;
       }
-      this.circle = document.createElement('div');
-      this.circle.classList.add('circle');
-      this.circle.addEventListener('click', function() {
+      circle = document.createElement('div');
+      circle.classList.add('circle');
+      circle.addEventListener('click', function() {
         return _this.animate();
       });
-      return this.demoSection.appendChild(this.circle);
+      this.demoSection.appendChild(circle);
+      return this.circle = dynamic(circle);
     };
 
-    App.prototype.code = function() {
-      var code, k, options, optionsStr, pointsValue, translateX, v;
-      options = this.animation.options;
-      translateX = options.type !== Dynamics.Types.SelfSpring ? 350 : 50;
-      optionsStr = "&nbsp;&nbsp;<strong>type</strong>: Dynamics.Types." + options.type.name;
+    App.prototype.code = function(options) {
+      var code, k, optionsStr, pointsValue, translateX, v;
+      if (options == null) {
+        options = this.to.options;
+      }
+      translateX = options.type !== dynamic.SelfSpring ? 350 : 50;
+      optionsStr = "&nbsp;&nbsp;<strong>type</strong>: dynamic." + options.type.name;
       for (k in options) {
         v = options[k];
         if (v === null || typeof v === 'function' || k === 'points') {
@@ -202,9 +211,6 @@
           continue;
         }
         if (k === 'animated') {
-          continue;
-        }
-        if (k === 'duration' && this.animation.dynamic().expectedDuration) {
           continue;
         }
         if (optionsStr !== '') {
@@ -219,7 +225,7 @@
         pointsValue = JSON.stringify(options.points);
         optionsStr += ",\n&nbsp;&nbsp;<strong>points</strong>: " + pointsValue;
       }
-      code = 'new <strong>Dynamics.Animation</strong>(document.getElementById("circle"), {\n&nbsp;&nbsp;<strong>transform</strong>: "translateX(' + translateX + 'px)"\n}, {\n' + optionsStr + '\n}).start();';
+      code = 'dynamic(document.getElementById("circle")).to({\n&nbsp;&nbsp;<strong>transform</strong>: "translateX(' + translateX + 'px)"\n}, {\n' + optionsStr + '\n}).start();';
       return code;
     };
 

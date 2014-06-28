@@ -1,4 +1,4 @@
-SOCKS_COUNT = 34
+SOCKS_COUNT = 1 # 34
 
 fade = (->
   el = document.querySelector('#fade')
@@ -56,11 +56,11 @@ logo = (->
     return unless fade.isHidden()
     scrollY = Math.min(window.scrollY, scrollFade)
     offset = scrollY / scrollFade
-    new Dynamics.Animation(el, {
+    dynamic(el).to({
       opacity: 1 - offset,
-      transform: "translateY(#{(- offset * 10)}px)"
+      translateY: - offset * 10
     }, {
-      type: Dynamics.Types.EaseInOut,
+      type: dynamic.EaseInOut,
       duration: 300,
       animated: options.animated
     }).start()
@@ -70,11 +70,11 @@ logo = (->
       el.className = ""
 
   show = ->
-    new Dynamics.Animation(el, {
+    dynamic(el).to({
       opacity: 1,
-      transform: "none"
+      translateY: 0
     }, {
-      type: Dynamics.Types.Spring,
+      type: dynamic.Spring,
       duration: 500
     }).start()
     el.className = ""
@@ -94,20 +94,20 @@ product = (->
   button = el.querySelector('button')
 
   closeButtonSpanStates = [
-    'translateY(-48px)',
-    'translateX(-48px) rotate(-90deg)'
+    { translateY: -48 },
+    { translateX: -48, rotate: -90 }
   ]
 
-  Dynamics.css(closeButtonSpan, {
-    transform: closeButtonSpanStates[1]
-  })
+  dynamic(closeButtonSpan).css(closeButtonSpanStates[1])
 
   closeButtonEl.addEventListener 'mouseover', =>
     closeButtonSpanVisible = true
-    new Dynamics.Animation(closeButtonSpan, {
-      transform: 'none'
+    dynamic(closeButtonSpan).to({
+      translateX: 0,
+      translateY: 0,
+      rotate: 0
     }, {
-      type: Dynamics.Types.Spring,
+      type: dynamic.Spring,
       frequency: 20,
       friction: 800,
       duration: 2000
@@ -120,21 +120,17 @@ product = (->
     if properties?
       options.complete = ->
         old.parentNode.removeChild(old)
-      new Dynamics.Animation(old, properties, options).start()
+      dynamic(old).to(properties, options).start()
     else
       old.parentNode.removeChild(old)
 
     closeButtonSpan = closeButtonSpan.cloneNode()
-    Dynamics.css(closeButtonSpan, {
-      transform: closeButtonSpanStates[1]
-    })
+    dynamic(closeButtonSpan).css(closeButtonSpanStates[1])
     closeButtonEl.appendChild(closeButtonSpan)
 
   closeButtonEl.addEventListener 'mouseout', =>
-    hideCloseButton({
-      transform: closeButtonSpanStates[0]
-    }, {
-     type: Dynamics.Types.Spring,
+    hideCloseButton(closeButtonSpanStates[0], {
+     type: dynamic.Spring,
      frequency: 0,
      friction: 490,
      anticipationStrength: 98,
@@ -146,17 +142,15 @@ product = (->
     el.style.pointerEvents = 'auto'
     for i in [0..texts.length - 1]
       text = texts[i]
-      setTimeout ((text) =>
-        new Dynamics.Animation(text, {
-          opacity: 1,
-          transform: 'none'
-        }, {
-          type: Dynamics.Types.Spring,
-          frequency: 30,
-          friction: 800,
-          duration: 2000
-        }).start()
-      ).bind(this, text), 500 + i * 70
+      dynamic(text).delay(500 + i * 70).to({
+        opacity: 1,
+        translateY: 0
+      }, {
+        type: dynamic.Spring,
+        frequency: 30,
+        friction: 800,
+        duration: 2000
+      }).start()
 
   hide = (animated = true) ->
     el.style.pointerEvents = 'none'
@@ -166,12 +160,12 @@ product = (->
       if text.parentNode.tagName.toLowerCase() == 'h2'
         h = 24
       else
-        h = 18
-      new Dynamics.Animation(text, {
+        h = 32
+      dynamic(text).to({
         opacity: 0,
-        transform: "translateY(#{h}px)"
+        translateY: h
       }, {
-        type: Dynamics.Types.EaseInOut,
+        type: dynamic.EaseInOut,
         duration: 200,
         animated: animated
       }).start()
@@ -203,19 +197,17 @@ class Loading
   tick: =>
     dot = @dots[@current]
     if @stopping
-      new Dynamics.Animation(dot, {
+      dynamic(dot).delay(350).to({
         opacity: 0
       }, {
-        type: Dynamics.Types.EaseInOut,
+        type: dynamic.EaseInOut,
         duration: 300
-      }).start({
-        delay: 350
-      })
+      }).start()
       @hiddenIndexes.push(@current)
-    new Dynamics.Animation(dot, {
-      transform: "translateY(-10px)"
+    dynamic(dot).to({
+      translateY: -10
     }, {
-      type: Dynamics.Types.GravityWithForce,
+      type: dynamic.GravityWithForce,
       bounce: 60,
       gravity: 1300
     }).start()
@@ -250,40 +242,40 @@ cart = (->
     options.animated ?= true
     show = ->
       cartSection.el.style.pointerEvents = 'auto'
-      new Dynamics.Animation(cartSection.footer, {
-        transform: "none"
+      dynamic(cartSection.footer).to({
+        translateY: 0
       }, {
-        type: Dynamics.Types.Spring,
+        type: dynamic.Spring,
         frequency: 25,
         friction: 1200,
         duration: 3500,
         animated: options.animated,
       }).start()
-      new Dynamics.Animation(cartSection.items, {
-        transform: "none",
+      dynamic(cartSection.items).delay(if options.animated then 100 else 0).to({
+        translateY: 0
         opacity: 1
       }, {
-        type: Dynamics.Types.Spring,
+        type: dynamic.Spring,
         frequency: 25,
         friction: 1200,
         duration: 3500,
         animated: options.animated,
-      }).start(delay: if options.animated then 100 else 0)
+      }).start()
 
     hide = ->
       cartSection.el.style.pointerEvents = 'none'
-      new Dynamics.Animation(cartSection.footer, {
-        transform: "translateY(260px)"
+      dynamic(cartSection.footer).delay(if options.animated then 200 else 0).to({
+        translateY: 260
       }, {
-        type: Dynamics.Types.EaseInOut,
+        type: dynamic.EaseInOut,
         duration: 700,
         animated: options.animated,
-      }).start(delay: if options.animated then 200 else 0)
-      new Dynamics.Animation(cartSection.items, {
-        transform: "translateY(260px)",
+      }).start()
+      dynamic(cartSection.items).to({
+        translateY: 260,
         opacity: 0
       }, {
-        type: Dynamics.Types.EaseInOut,
+        type: dynamic.EaseInOut,
         duration: 700,
         animated: options.animated,
       }).start()
@@ -299,35 +291,35 @@ cart = (->
   setCloseButtonVisibility = (visible, options = {}) ->
     options.animated ?= true
     opacityAnimationOptions = {
-      type: Dynamics.Types.EaseInOut,
+      type: dynamic.EaseInOut,
       duration: 200,
       animated: options.animated
     }
     showElement = (el) ->
-      new Dynamics.Animation(el, {
-        transform: "none"
+      dynamic(el).delay(150).to({
+        scaleX: 1
       }, {
-        type: Dynamics.Types.Spring,
+        type: dynamic.Spring,
         frequency: 25,
         friction: 300,
         duration: 700,
         animated: options.animated,
-      }).start({ delay: 150 })
-      new Dynamics.Animation(el, {
+      }).start()
+      dynamic(el).to({
         opacity: 1
       }, opacityAnimationOptions).start()
 
     hideElement = (el) ->
-      new Dynamics.Animation(el, {
-        transform: "scaleX(.01)"
+      dynamic(el).to({
+        scaleX: 0.01
       }, {
-        type: Dynamics.Types.EaseInOut,
+        type: dynamic.EaseInOut,
         duration: 300,
         animated: options.animated
       }).start()
-      new Dynamics.Animation(el, {
+      dynamic(el).delay(if options.animated then 100).to({
         opacity: 0
-      }, opacityAnimationOptions).start({ delay: if options.animated then 100 })
+      }, opacityAnimationOptions).start()
 
     if visible
       showElement(closeEl)
@@ -340,34 +332,34 @@ cart = (->
 
   addItem = (item) ->
     if currentCartLabelEl
-      new Dynamics.Animation(currentCartLabelEl, {
-        transform: 'translateY(6px)',
+      dynamic(currentCartLabelEl).to({
+        translateY: 6,
         opacity: 0
       }, {
-        type: Dynamics.Types.EaseInOut,
+        type: dynamic.EaseInOut,
         duration: 250
       }).start()
 
     items.push(item)
     currentCartLabelEl = cartLabelEl.cloneNode()
     currentCartLabelEl.innerHTML = items.length
-    Dynamics.css(currentCartLabelEl, {
-      transform: 'translateY(-6px)',
+    dynamic(currentCartLabelEl).css({
+      translateY: -6,
       opacity: 0
     })
     cartEl.appendChild(currentCartLabelEl)
     cartEl.className = 'filled'
-    new Dynamics.Animation(currentCartLabelEl, {
-      transform: "none"
+    dynamic(currentCartLabelEl).to({
+      translateY: 0
     }, {
-      type: Dynamics.Types.Gravity,
+      type: dynamic.Gravity,
       bounce: 60,
       gravity: 1300
     }).start()
-    new Dynamics.Animation(currentCartLabelEl, {
+    dynamic(currentCartLabelEl).to({
       opacity: 1
     }, {
-      type: Dynamics.Types.EaseInOut,
+      type: dynamic.EaseInOut,
       duration: 250
     }).start()
 
@@ -414,41 +406,39 @@ grid = (->
 
     itemOver: =>
       return if @disabled
-      new Dynamics.Animation(@el, {
-        transform: "scale(1.18)",
+      dynamic(@el).to({
+        scale: 1.18,
         opacity: 1
       }, {
-        type: Dynamics.Types.Spring,
+        type: dynamic.Spring,
         frequency: 25,
         duration: 300
       }).start()
 
     itemOut: =>
       return if @disabled
-      new Dynamics.Animation(@el, {
-        transform: "none"
+      dynamic(@el).to({
+        scale: 1
       }, {
-        type: Dynamics.Types.Spring,
+        type: dynamic.Spring,
         duration: 1500
       }).start()
 
     show: =>
-      Dynamics.css(@el, {
+      dynamic(@el).css({
         opacity: 0,
-        transform: "scale(.01)"
+        scale: 0.01
       })
       gridEl.appendChild(@el)
-      new Dynamics.Animation(@el, {
-        transform: "scale(1)",
+      dynamic(@el).delay(@index * 20).to({
+        scale: 1,
         opacity: 1
       }, {
-        type: Dynamics.Types.Spring,
+        type: dynamic.Spring,
         friction: 500,
         frequency: 25,
         duration: 2500
-      }).start({
-        delay: @index * 20
-      })
+      }).start()
 
     absolutePosition: =>
       offset = cumulativeOffset(@el)
@@ -466,7 +456,7 @@ grid = (->
       pos = @absolutePosition()
       @clonedEl = @el.cloneNode(true)
       @clonedEl.addEventListener 'click', @close
-      Dynamics.css(@clonedEl, {
+      dynamic(@clonedEl).css({
         position: 'absolute',
         top: pos.top,
         left: pos.left,
@@ -474,11 +464,13 @@ grid = (->
       })
       productEl.appendChild(@clonedEl)
       @el.classList.add('hidden')
-      new Dynamics.Animation(@clonedEl, {
-        transform: "translateX(#{-pos.left + 40}px) translateY(#{-pos.top + 60}px) scale(2)",
+      dynamic(@clonedEl).to({
+        translateX: -pos.left + 40,
+        translateY: -pos.top + 60
+        scale: 2,
         opacity: 1
       }, {
-        type: Dynamics.Types.Spring,
+        type: dynamic.Spring,
         friction: 600,
         frequency: 10,
         anticipationSize: 14,
@@ -489,7 +481,7 @@ grid = (->
 
     animateClonedEl: (properties = {}, options = {}, noAnimation = true) =>
       setTimeout =>
-        Dynamics.css(@clonedEl, {
+        dynamic(@clonedEl).css({
           zIndex: 1,
         })
       , 400
@@ -499,20 +491,20 @@ grid = (->
       cloneElPos.left += window.scrollX
       productEl.removeChild(@clonedEl)
       document.body.appendChild(@clonedEl)
-      Dynamics.css(@clonedEl, {
+      dynamic(@clonedEl).css({
         top: cloneElPos.top,
         left: cloneElPos.left
       })
 
       options.complete = =>
         unless noAnimation
-          Dynamics.css(@el, {
-            transform: 'scale(.01)'
+          dynamic(@el).css({
+            scale: 0.01
           })
-          new Dynamics.Animation(@el, {
-            transform: 'none'
+          dynamic(@el).to({
+            scale: 1
           }, {
-            type: Dynamics.Types.Spring,
+            type: dynamic.Spring,
             friction: 600,
             frequency: 20,
             anticipationSize: 14,
@@ -523,26 +515,26 @@ grid = (->
         document.body.removeChild(@clonedEl)
         @clonedEl = null
 
-      new Dynamics.Animation(@clonedEl, properties, options).start()
+      dynamic(@clonedEl).to(properties, options).start()
 
     close: (callback) =>
       fade.hide()
       logo.updateOffset(animated: true)
       product.hide()
-
       pos = @absolutePosition()
-      transform = "translateX(#{- parseInt(@clonedEl.style.left, 10) + pos.left}px) translateY(#{- parseInt(@clonedEl.style.top, 10) + pos.top}px)"
       @animateClonedEl({
-        transform: transform,
+        translateX: - parseInt(@clonedEl.style.left, 10) + pos.left,
+        translateY: - parseInt(@clonedEl.style.top, 10) + pos.top,
+        scale: 1,
         opacity: 1
       }, {
-        type: Dynamics.Types.Spring,
+        type: dynamic.Spring,
         friction: 600,
         frequency: 10,
         duration: 2000
       })
       setTimeout =>
-        callback()
+        callback?()
       , 500
 
     addToCart: =>
@@ -553,21 +545,19 @@ grid = (->
       pos = cumulativeOffset(@el)
       offset = cumulativeOffset(cartEl)
       offset.left += 27
-      transform = "translateX(#{offset.left - pos.left - 32}px) translateY(#{offset.top - pos.top - 48}px) scale(.2)"
-      console.log(pos, offset)
-      console.log(transform)
-      new Dynamics.Animation(@clonedEl, {
+      properties = {
+        translateX: offset.left - pos.left - 32,
+        translateY: offset.top - pos.top - 48,
+        scale: 0.2
+      }
+      dynamic(@clonedEl).delay(400).to({
         opacity: 0
       }, {
-        type: Dynamics.Types.EaseInOut,
+        type: dynamic.EaseInOut,
         duration: 300
-      }).start({
-        delay: 400
-      })
-      @animateClonedEl({
-        transform: transform
-      }, {
-        type: Dynamics.Types.Spring,
+      }).start()
+      @animateClonedEl(properties, {
+        type: dynamic.Spring,
         frequency: 3,
         friction: 200,
         anticipationStrength: 67,
@@ -615,43 +605,22 @@ grid = (->
                 offset.top / windowHeight
         delay *= 500
         translateX = offset.left - (windowWidth / 2)
-        new Dynamics.Animation(item.el, {
-          transform: "translateY(-#{offset.top + 160}px) translateX(#{translateX}px) rotate(#{Math.round(Math.random() * 90 - 45)}deg)"
+        dynamic(item.el).delay(delay).to({
+          translateY: -offset.top + 160,
+          translateX: translateX,
+          rotate: Math.round(Math.random() * 90 - 45)
         }, {
-          type: Dynamics.Types.Bezier,
+          type: dynamic.Bezier,
           duration: 450,
           points: [{"x":0,"y":0,"controlPoints":[{"x":0.2,"y":0}]},{"x":1,"y":1,"controlPoints":[{"x":0.843,"y":0.351}]}],
           complete: =>
             item.el.style.visibility = 'hidden'
-        }).start({
-          delay: delay
-        })
+        }).start()
 
   closeCartEl.addEventListener 'click', ->
     cart.close()
     windowWidth = window.innerWidth
     windowHeight = window.innerHeight
-    return
-    for i, item of items
-      do (item) ->
-        item.el.style.visibility = ''
-        offset = cumulativeOffset(item.el)
-        delay = Math.abs(offset.left - (windowWidth / 2)) / (windowWidth / 2) +
-                (windowHeight - offset.top) / windowHeight
-        delay *= 500
-        translateX = offset.left - (windowWidth / 2)
-        new Dynamics.Animation(item.el, {
-          transform: "none"
-        }, {
-          type: Dynamics.Types.Spring,
-          frequency: 3,
-          friction: 200,
-          duration: 700,
-          complete: =>
-            item.setDisabled(false)
-        }).start({
-          delay: delay
-        })
 
   closeCurrentItem = (callback) ->
     if currentItem?

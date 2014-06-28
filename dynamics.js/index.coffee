@@ -43,35 +43,35 @@ class App
       @options[k] = v
     for k, v of urlOptions
       @options[k] = v
-    @options.type = eval("Dynamics.Types.#{@options.type}") if @options.type
+    @options.type = eval("dynamic.#{@options.type}") if @options.type
 
     @createAnimation()
     @update()
 
-  update: =>
-    return unless @animation
+  update: (options) =>
+    return unless @circle
 
     # Update code
-    @codeSection.innerHTML = @code()
+    @codeSection.innerHTML = @code(options)
 
     # Update URL
-    options = {}
-    for k, v of @animation.options
+    urlOptions = {}
+    for k, v of (options ? @to.options)
       continue if k == 'debugName' or v == null or (typeof(v) == 'function' and k != 'type')
       if k == 'type'
-        options[k] = v.name
+        urlOptions[k] = v.name
       else if k == 'points'
-        options[k] = JSON.stringify(v)
+        urlOptions[k] = JSON.stringify(v)
       else
-        options[k] = v
-    Tools.saveValues(options)
+        urlOptions[k] = v
+    Tools.saveValues(urlOptions)
 
     # Animate
     clearTimeout @animationTimeout if @animationTimeout
     @animationTimeout = setTimeout(@animate, 400)
 
   animate: =>
-    @animation.start()
+    @circle.to(@to.to, @to.options).start()
 
   createAnimation: =>
     to = { transform: 'translateX(350px)' }
@@ -85,14 +85,14 @@ class App
       toDestroyCircle = document.createElement('div')
       toDestroyCircle.classList.add('circle')
       transform = 'scale(0)'
-      if !animation.dynamic().returnsToSelf
+      if true
         toDestroyCircle.style.transform = toDestroyCircle.style.MozTransform = toDestroyCircle.style.webkitTransform = 'translateX(350px)'
         transform = "translateX(350px) #{transform}"
       @demoSection.appendChild(toDestroyCircle)
-      destroyingAnimation = new Dynamics.Animation(toDestroyCircle, {
+      dynamic(toDestroyCircle).to({
         transform: transform
       }, {
-        type: Dynamics.Types.Spring,
+        type: dynamic.Spring,
         frequency: 0,
         friction: 600,
         anticipationStrength: 100,
@@ -103,11 +103,11 @@ class App
       }).start()
 
       # Position the circle at the starting point
-      @circle.style.transform = @circle.style.MozTransform = @circle.style.webkitTransform = 'scale(0)'
-      showingAnimation = new Dynamics.Animation(@circle, {
+      @circle.css({ transform: 'scale(0)' })
+      @circle.to({
         transform: 'scale(1)'
       }, {
-        type: Dynamics.Types.Spring,
+        type: dynamic.Spring,
         frequency: 0,
         friction: 600,
         anticipationStrength: 100,
@@ -115,32 +115,33 @@ class App
         duration: 1000
       }).start()
     options.optionsChanged = @update
-    window.anim = @animation = new Dynamics.Animation(@circle, to, options)
+    @to = { to: to, options: options }
 
   createCircle: =>
     return if @circle
-    @circle = document.createElement('div')
-    @circle.classList.add('circle')
-    @circle.addEventListener 'click', =>
+    circle = document.createElement('div')
+    circle.classList.add('circle')
+    circle.addEventListener 'click', =>
       @animate()
-    @demoSection.appendChild(@circle)
+    @demoSection.appendChild(circle)
+    @circle = dynamic(circle)
 
-  code: =>
-    options = @animation.options
-    translateX = if options.type != Dynamics.Types.SelfSpring then 350 else 50
-    optionsStr = "&nbsp;&nbsp;<strong>type</strong>: Dynamics.Types.#{options.type.name}"
+  code: (options) =>
+    options ?= @to.options
+    translateX = if options.type != dynamic.SelfSpring then 350 else 50
+    optionsStr = "&nbsp;&nbsp;<strong>type</strong>: dynamic.#{options.type.name}"
     for k, v of options
       continue if v == null or typeof(v) == 'function' or k == 'points'
       continue if k == 'debugName'
       continue if k == 'animated'
-      continue if k == 'duration' and @animation.dynamic().expectedDuration
+      # continue if k == 'duration' and @to.dynamic().expectedDuration
       optionsStr += ",\n" if optionsStr != ''
       v = "\"#{v}\"" if k == 'debugName'
       optionsStr += "&nbsp;&nbsp;<strong>#{k}</strong>: #{v}"
     if options.points
       pointsValue = JSON.stringify(options.points)
       optionsStr += ",\n&nbsp;&nbsp;<strong>points</strong>: #{pointsValue}"
-    code = '''new <strong>Dynamics.Animation</strong>(document.getElementById("circle"), {
+    code = '''dynamic(document.getElementById("circle")).to({
 &nbsp;&nbsp;<strong>transform</strong>: "translateX(''' + translateX + '''px)"
 }, {
 
