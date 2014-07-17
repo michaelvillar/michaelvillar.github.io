@@ -87,6 +87,8 @@ div.track > span.index {
   font-size: 10px;
   color: #8096B1;
   position: absolute;
+  user-select: none;
+  -webkit-user-select: none;
 }
 div.track > span.index1 {
   left: auto;

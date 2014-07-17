@@ -34,8 +34,8 @@ class App
       type: 'Spring',
       frequency: 15,
       friction: 200,
-      anticipationStrength: 115,
-      anticipationSize: 10,
+      anticipationStrength: 200,
+      anticipationSize: 25,
       duration: 1000
     }
     @options = {}
@@ -46,7 +46,7 @@ class App
     @options.type = eval("dynamic.#{@options.type}") if @options.type
 
     @createAnimation()
-    @update()
+    @update(@options)
 
   update: (options) =>
     return unless @circle
@@ -66,56 +66,32 @@ class App
         urlOptions[k] = v
     Tools.saveValues(urlOptions)
 
+    # Change track size
+    options = Dynamics.Overrides.getOverride(@to.options, @to.options.debugName)
+    if @translateX(options.type) == 350
+      @track.classList.remove('tiny')
+    else
+      @track.classList.add('tiny')
+
     # Animate
     clearTimeout @animationTimeout if @animationTimeout
     @animationTimeout = setTimeout(@animate, 400)
 
   animate: =>
-    @circle.to(@to.to, @to.options).start()
+    options = Dynamics.Overrides.getOverride(@to.options, @to.options.debugName)
+    @circle.to({
+      transform: "translateX(#{@translateX(options.type)}px)"
+    }, @to.options).start()
 
   createAnimation: =>
-    to = { transform: 'translateX(350px)' }
     @createCircle()
     options = {}
     for k, v of @options
       options[k] = v
     options.debugName = 'animation1'
-    options.complete = (animation) =>
-      # Create a dummy circle to animate the end
-      toDestroyCircle = document.createElement('div')
-      toDestroyCircle.classList.add('circle')
-      transform = 'scale(0)'
-      if true
-        toDestroyCircle.style.transform = toDestroyCircle.style.MozTransform = toDestroyCircle.style.webkitTransform = 'translateX(350px)'
-        transform = "translateX(350px) #{transform}"
-      @demoSection.appendChild(toDestroyCircle)
-      dynamic(toDestroyCircle).to({
-        transform: transform
-      }, {
-        type: dynamic.Spring,
-        frequency: 0,
-        friction: 600,
-        anticipationStrength: 100,
-        anticipationSize: 10,
-        duration: 1000,
-        complete: =>
-          @demoSection.removeChild(toDestroyCircle)
-      }).start()
-
-      # Position the circle at the starting point
-      @circle.css({ transform: 'scale(0)' })
-      @circle.to({
-        transform: 'scale(1)'
-      }, {
-        type: dynamic.Spring,
-        frequency: 0,
-        friction: 600,
-        anticipationStrength: 100,
-        anticipationSize: 10,
-        duration: 1000
-      }).start()
+    options.complete = @onComplete
     options.optionsChanged = @update
-    @to = { to: to, options: options }
+    @to = { options: options }
 
   createCircle: =>
     return if @circle
@@ -128,7 +104,7 @@ class App
 
   code: (options) =>
     options ?= @to.options
-    translateX = if options.type != dynamic.SelfSpring then 350 else 50
+    translateX = @translateX(options.type)
     optionsStr = "&nbsp;&nbsp;<strong>type</strong>: dynamic.#{options.type.name}"
     for k, v of options
       continue if v == null or typeof(v) == 'function' or k == 'points'
@@ -149,6 +125,56 @@ class App
 
 }).start();'''
     code
+
+  # Private
+  endTranslateX: (type) ->
+    if type in [dynamic.SelfSpring, dynamic.GravityWithForce]
+      0
+    else
+      350
+
+  translateX: (type) ->
+    if type in [dynamic.SelfSpring]
+      50
+    else
+      350
+
+  # Events
+  onComplete: (element, to, options) =>
+    # Create a dummy circle to animate the end
+    toDestroyCircle = document.createElement('div')
+    toDestroyCircle.classList.add('circle')
+    transform = 'scale(0)'
+    dynamic(toDestroyCircle).css({
+      transform: "translateX(#{@endTranslateX(options.type)}px)"
+    })
+    transform = "translateX(#{@endTranslateX(options.type)}px) #{transform}"
+    @demoSection.appendChild(toDestroyCircle)
+    dynamic(toDestroyCircle).to({
+      transform: transform
+    }, {
+      type: dynamic.Spring,
+      frequency: 0,
+      friction: 600,
+      anticipationStrength: 100,
+      anticipationSize: 10,
+      duration: 1000,
+      complete: =>
+        @demoSection.removeChild(toDestroyCircle)
+    }).start()
+
+    # Position the circle at the starting point
+    @circle.css({ transform: 'scale(0)' })
+    @circle.to({
+      transform: 'scale(1)'
+    }, {
+      type: dynamic.Spring,
+      frequency: 0,
+      friction: 600,
+      anticipationStrength: 100,
+      anticipationSize: 10,
+      duration: 1000
+    }).start()
 
 document.addEventListener "DOMContentLoaded", ->
   app = new App

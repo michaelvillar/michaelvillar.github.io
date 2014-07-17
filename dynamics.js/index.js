@@ -45,6 +45,8 @@
   App = (function() {
 
     function App() {
+      this.onComplete = __bind(this.onComplete, this);
+
       this.code = __bind(this.code, this);
 
       this.createCircle = __bind(this.createCircle, this);
@@ -70,8 +72,8 @@
         type: 'Spring',
         frequency: 15,
         friction: 200,
-        anticipationStrength: 115,
-        anticipationSize: 10,
+        anticipationStrength: 200,
+        anticipationSize: 25,
         duration: 1000
       };
       this.options = {};
@@ -87,7 +89,7 @@
         this.options.type = eval("dynamic." + this.options.type);
       }
       this.createAnimation();
-      this.update();
+      this.update(this.options);
     }
 
     App.prototype.update = function(options) {
@@ -112,6 +114,12 @@
         }
       }
       Tools.saveValues(urlOptions);
+      options = Dynamics.Overrides.getOverride(this.to.options, this.to.options.debugName);
+      if (this.translateX(options.type) === 350) {
+        this.track.classList.remove('tiny');
+      } else {
+        this.track.classList.add('tiny');
+      }
       if (this.animationTimeout) {
         clearTimeout(this.animationTimeout);
       }
@@ -119,15 +127,15 @@
     };
 
     App.prototype.animate = function() {
-      return this.circle.to(this.to.to, this.to.options).start();
+      var options;
+      options = Dynamics.Overrides.getOverride(this.to.options, this.to.options.debugName);
+      return this.circle.to({
+        transform: "translateX(" + (this.translateX(options.type)) + "px)"
+      }, this.to.options).start();
     };
 
     App.prototype.createAnimation = function() {
-      var k, options, to, v, _ref,
-        _this = this;
-      to = {
-        transform: 'translateX(350px)'
-      };
+      var k, options, v, _ref;
       this.createCircle();
       options = {};
       _ref = this.options;
@@ -136,46 +144,9 @@
         options[k] = v;
       }
       options.debugName = 'animation1';
-      options.complete = function(animation) {
-        var toDestroyCircle, transform;
-        toDestroyCircle = document.createElement('div');
-        toDestroyCircle.classList.add('circle');
-        transform = 'scale(0)';
-        if (true) {
-          toDestroyCircle.style.transform = toDestroyCircle.style.MozTransform = toDestroyCircle.style.webkitTransform = 'translateX(350px)';
-          transform = "translateX(350px) " + transform;
-        }
-        _this.demoSection.appendChild(toDestroyCircle);
-        dynamic(toDestroyCircle).to({
-          transform: transform
-        }, {
-          type: dynamic.Spring,
-          frequency: 0,
-          friction: 600,
-          anticipationStrength: 100,
-          anticipationSize: 10,
-          duration: 1000,
-          complete: function() {
-            return _this.demoSection.removeChild(toDestroyCircle);
-          }
-        }).start();
-        _this.circle.css({
-          transform: 'scale(0)'
-        });
-        return _this.circle.to({
-          transform: 'scale(1)'
-        }, {
-          type: dynamic.Spring,
-          frequency: 0,
-          friction: 600,
-          anticipationStrength: 100,
-          anticipationSize: 10,
-          duration: 1000
-        }).start();
-      };
+      options.complete = this.onComplete;
       options.optionsChanged = this.update;
       return this.to = {
-        to: to,
         options: options
       };
     };
@@ -200,7 +171,7 @@
       if (options == null) {
         options = this.to.options;
       }
-      translateX = options.type !== dynamic.SelfSpring ? 350 : 50;
+      translateX = this.translateX(options.type);
       optionsStr = "&nbsp;&nbsp;<strong>type</strong>: dynamic." + options.type.name;
       for (k in options) {
         v = options[k];
@@ -227,6 +198,61 @@
       }
       code = 'dynamic(document.getElementById("circle")).to({\n&nbsp;&nbsp;<strong>transform</strong>: "translateX(' + translateX + 'px)"\n}, {\n' + optionsStr + '\n}).start();';
       return code;
+    };
+
+    App.prototype.endTranslateX = function(type) {
+      if (type === dynamic.SelfSpring || type === dynamic.GravityWithForce) {
+        return 0;
+      } else {
+        return 350;
+      }
+    };
+
+    App.prototype.translateX = function(type) {
+      if (type === dynamic.SelfSpring) {
+        return 50;
+      } else {
+        return 350;
+      }
+    };
+
+    App.prototype.onComplete = function(element, to, options) {
+      var toDestroyCircle, transform,
+        _this = this;
+      toDestroyCircle = document.createElement('div');
+      toDestroyCircle.classList.add('circle');
+      transform = 'scale(0)';
+      dynamic(toDestroyCircle).css({
+        transform: "translateX(" + (this.endTranslateX(options.type)) + "px)"
+      });
+      transform = "translateX(" + (this.endTranslateX(options.type)) + "px) " + transform;
+      this.demoSection.appendChild(toDestroyCircle);
+      dynamic(toDestroyCircle).to({
+        transform: transform
+      }, {
+        type: dynamic.Spring,
+        frequency: 0,
+        friction: 600,
+        anticipationStrength: 100,
+        anticipationSize: 10,
+        duration: 1000,
+        complete: function() {
+          return _this.demoSection.removeChild(toDestroyCircle);
+        }
+      }).start();
+      this.circle.css({
+        transform: 'scale(0)'
+      });
+      return this.circle.to({
+        transform: 'scale(1)'
+      }, {
+        type: dynamic.Spring,
+        frequency: 0,
+        friction: 600,
+        anticipationStrength: 100,
+        anticipationSize: 10,
+        duration: 1000
+      }).start();
     };
 
     return App;
