@@ -1,4 +1,4 @@
-SOCKS_COUNT = 1 # 34
+SOCKS_COUNT = 34
 
 fade = (->
   el = document.querySelector('#fade')
@@ -152,7 +152,7 @@ product = (->
         duration: 2000
       }).start()
 
-  hide = (animated = true) ->
+  hide = (animated = true, options = {}) ->
     el.style.pointerEvents = 'none'
     hideCloseButton()
     for i in [0..texts.length - 1]
@@ -167,10 +167,14 @@ product = (->
       }, {
         type: dynamic.EaseInOut,
         duration: 200,
-        animated: animated
+        animated: animated,
+        complete: options.complete
       }).start()
 
-  hide(false)
+  hide(false, {
+    complete: =>
+      el.style.display = ''
+  })
 
   {
     show: show,
@@ -260,6 +264,7 @@ cart = (->
         friction: 1200,
         duration: 3500,
         animated: options.animated,
+        complete: options.complete,
       }).start()
 
     hide = ->
@@ -270,6 +275,7 @@ cart = (->
         type: dynamic.EaseInOut,
         duration: 700,
         animated: options.animated,
+        complete: options.complete,
       }).start()
       dynamic(cartSection.items).to({
         translateY: 260,
@@ -285,8 +291,11 @@ cart = (->
     else
       hide()
 
-  setCartSectionVisibility(false, { animated: false })
-  cartSection.el.style.display = ''
+  setCartSectionVisibility(false, {
+    animated: false,
+    complete: =>
+      cartSection.el.style.display = ''
+  })
 
   setCloseButtonVisibility = (visible, options = {}) ->
     options.animated ?= true

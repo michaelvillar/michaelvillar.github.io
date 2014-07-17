@@ -3,7 +3,7 @@
   var Loading, SOCKS_COUNT, cart, cumulativeOffset, fade, grid, loading, logo, product,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-  SOCKS_COUNT = 1;
+  SOCKS_COUNT = 34;
 
   fade = (function() {
     var el, hidden, hide, hideTimeout, show;
@@ -189,10 +189,13 @@
       }
       return _results;
     };
-    hide = function(animated) {
+    hide = function(animated, options) {
       var h, i, text, _i, _ref, _results;
       if (animated == null) {
         animated = true;
+      }
+      if (options == null) {
+        options = {};
       }
       el.style.pointerEvents = 'none';
       hideCloseButton();
@@ -210,12 +213,17 @@
         }, {
           type: dynamic.EaseInOut,
           duration: 200,
-          animated: animated
+          animated: animated,
+          complete: options.complete
         }).start());
       }
       return _results;
     };
-    hide(false);
+    hide(false, {
+      complete: function() {
+        return el.style.display = '';
+      }
+    });
     return {
       show: show,
       hide: hide,
@@ -296,7 +304,8 @@
   loading.start();
 
   cart = (function() {
-    var addItem, cartEl, cartLabelEl, cartSection, closeEl, currentCartLabelEl, items, setCartSectionVisibility, setCloseButtonVisibility;
+    var addItem, cartEl, cartLabelEl, cartSection, closeEl, currentCartLabelEl, items, setCartSectionVisibility, setCloseButtonVisibility,
+      _this = this;
     cartEl = document.querySelector('header a#cart');
     closeEl = document.querySelector('header a#closeCart');
     cartLabelEl = cartEl.querySelector('.label');
@@ -334,7 +343,8 @@
           frequency: 25,
           friction: 1200,
           duration: 3500,
-          animated: options.animated
+          animated: options.animated,
+          complete: options.complete
         }).start();
       };
       hide = function() {
@@ -344,7 +354,8 @@
         }, {
           type: dynamic.EaseInOut,
           duration: 700,
-          animated: options.animated
+          animated: options.animated,
+          complete: options.complete
         }).start();
         return dynamic(cartSection.items).to({
           translateY: 260,
@@ -362,9 +373,11 @@
       }
     };
     setCartSectionVisibility(false, {
-      animated: false
+      animated: false,
+      complete: function() {
+        return cartSection.el.style.display = '';
+      }
     });
-    cartSection.el.style.display = '';
     setCloseButtonVisibility = function(visible, options) {
       var hideElement, opacityAnimationOptions, showElement, _ref;
       if (options == null) {
