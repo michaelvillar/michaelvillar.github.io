@@ -41,22 +41,37 @@
     translateY: 100
   }, {
     type: dynamic.Gravity,
-    gravity: 1000,
+    gravity: 500,
     bounce: 30
   })
   dSquare.to({
     scale: 1.8
   }, {
     type: dynamic.Spring,
-    duration: 500
+    duration: 2000
   })
-  dSquare.delay(200)
-  dSquare.to({
-    rotate: 45
-  }, {
-    type: dynamic.EaseInOut,
-    duration: 600
-  })
+  // dSquare.delay(200)
+  // dSquare.to({
+  //   rotate: 45
+  // }, {
+  //   type: dynamic.EaseInOut,
+  //   duration: 600
+  // })
+  // dSquare.delay(1000)
+  // dSquare.to({
+  //   translateY: 0
+  // }, {
+  //   type: dynamic.EaseInOut,
+  //   duration: 600
+  // })
+  // dSquare.delay(200)
+  // dSquare.to({
+  //   scale: 1,
+  //   rotate: 0
+  // }, {
+  //   type: dynamic.EaseInOut,
+  //   duration: 600
+  // })
   dSquare.start()
   </script>
 </body>

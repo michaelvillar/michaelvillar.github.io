@@ -118,8 +118,7 @@ class App
       pointsValue = JSON.stringify(options.points)
       optionsStr += ",\n&nbsp;&nbsp;<strong>points</strong>: #{pointsValue}"
     code = '''dynamic(document.getElementById("circle")).to({
-&nbsp;&nbsp;<strong>transform</strong>: "translateX(''' + translateX + '''px)"
-}, {
+&nbsp;&nbsp;<strong>translateX</strong>: ''' + translateX + '''\n}, {
 
 ''' + optionsStr + '''
 
@@ -144,14 +143,13 @@ class App
     # Create a dummy circle to animate the end
     toDestroyCircle = document.createElement('div')
     toDestroyCircle.classList.add('circle')
-    transform = 'scale(0)'
     dynamic(toDestroyCircle).css({
-      transform: "translateX(#{@endTranslateX(options.type)}px)"
+      translateX: @endTranslateX(options.type)
     })
-    transform = "translateX(#{@endTranslateX(options.type)}px) #{transform}"
     @demoSection.appendChild(toDestroyCircle)
     dynamic(toDestroyCircle).to({
-      transform: transform
+      translateX: @endTranslateX(options.type),
+      scale: 0
     }, {
       type: dynamic.Spring,
       frequency: 0,
@@ -164,9 +162,9 @@ class App
     }).start()
 
     # Position the circle at the starting point
-    @circle.css({ transform: 'scale(0)' })
+    @circle.css({ scale: 0 })
     @circle.to({
-      transform: 'scale(1)'
+      scale: 1
     }, {
       type: dynamic.Spring,
       frequency: 0,
