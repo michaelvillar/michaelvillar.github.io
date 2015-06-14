@@ -1,21 +1,9 @@
-@font-face {
-  font-family: 'SourceSansPro';
-  src: url('fonts/SourceSansPro-Regular.ttf');
-}
-@font-face {
-  font-family: 'SourceCodePro';
-  src: url('fonts/SourceCodePro-Regular.ttf');
-}
-@font-face {
-  font-family: 'SourceCodePro-Semibold';
-  src: url('fonts/SourceCodePro-Semibold.ttf');
-}
-
+@import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro|Source+Code+Pro:400,600);
 
 * {
   margin: 0;
   padding: 0;
-  font-family: "SourceSansPro", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial;
+  font-family: "Source Sans Pro", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial;
   cursor: default;
   -webkit-user-select: none;
 }
@@ -97,7 +85,7 @@ section {
 }
 
 section.editor #editor, section.editor #editor * {
-  font-family: "SourceSansPro", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial;
+  font-family: "Source Sans Pro", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial;
   font-size: 15px;
 }
 
@@ -164,7 +152,7 @@ section.code {
   padding: 17px;
   overflow: hidden;
   white-space: pre-wrap;
-  font-family: "SourceCodePro", Menlo, Courier, Arial;
+  font-family: "Source Code Pro", Menlo, Courier, Arial;
   font-size: 14px;
   color: #496281;
   line-height: 18px;
@@ -172,8 +160,8 @@ section.code {
   cursor: text;
 }
 section.code strong {
-  font-family: "SourceCodePro-Semibold", Menlo, Courier, Arial;
-  font-weight: normal;
+  font-family: "Source Code Pro", Menlo, Courier, Arial;
+  font-weight: 600;
   -webkit-user-select: auto;
   color: #214373;
 }

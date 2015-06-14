@@ -1,11 +1,4 @@
-@font-face {
-  font-family: 'SourceCodePro';
-  src: url('../fonts/SourceCodePro-Regular.ttf');
-}
-@font-face {
-  font-family: 'SourceCodePro-Semibold';
-  src: url('../fonts/SourceCodePro-Semibold.ttf');
-}
+@import url(http://fonts.googleapis.com/css?family=Source+Code+Pro:400,600);
 
 * {
   margin: 0;
@@ -62,7 +55,7 @@ code {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  font-family: "SourceCodePro", Menlo, Courier, Arial;
+  font-family: "Source Code Pro", Menlo, Courier, Arial;
   font-size: 13px;
 }
 code, code * {
