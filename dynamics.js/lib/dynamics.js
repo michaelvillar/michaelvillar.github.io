@@ -1258,7 +1258,7 @@
       prop = propArray[_i];
       propertyName += prop.substring(0, 1).toUpperCase() + prop.substring(1);
     }
-    _ref = ["Webkit", "Moz"];
+    _ref = ["Webkit", "Moz", "ms"];
     for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
       prefix = _ref[_j];
       k = prefix + propertyName;

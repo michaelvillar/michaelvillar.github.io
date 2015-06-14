@@ -1,5 +1,5 @@
 showEditor = ->
-  document.body.classList.add('debug')
+  document.body.className += ' debug'
 
   preEl = document.createElement("pre")
   codeEl = document.createElement("code")
@@ -9,12 +9,13 @@ showEditor = ->
 
   backEl = document.createElement("a")
   backEl.href = "/"
-  backEl.classList.add("back")
+  backEl.className = "back"
   document.body.appendChild(backEl)
 
-  document.head.innerHTML += """
-  <link rel="stylesheet" href="macClassicTheme.css">
-  """
+  link = document.createElement("link")
+  link.rel = "stylesheet"
+  link.href = "macClassicTheme.css"
+  document.head.appendChild(link)
 
   script = document.createElement("script")
   script.src = "//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/highlight.min.js"
