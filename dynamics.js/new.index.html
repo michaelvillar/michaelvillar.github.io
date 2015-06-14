@@ -29,15 +29,6 @@
     </div>
   </section>
   <section class="code"></section>
-  <script>
-  var codeEl = document.querySelector('.code');
-  var editor = new dynamics.Editor({
-    onChange: function() {
-      codeEl.innerHTML = this.code(true);
-    }
-  });
-  document.querySelector(".editor").appendChild(editor.el);
-  </script>
   <div class="examplesContainer">
     <section class="examples">
       <h3>Examples</h3>
@@ -85,5 +76,23 @@
     <a href="https://github.com/michaelvillar/dynamics.js/releases">Download</a>
     <span class="right">by <a href="https://twitter.com/michaelvillar">@michaelvillar</a></span>
   </nav>
+  <script>
+  var codeEl = document.querySelector('.code');
+  var editor = new dynamics.Editor({
+    onChange: function() {
+      codeEl.innerHTML = this.code(true);
+    }
+  });
+  document.querySelector(".editor").appendChild(editor.el);
+
+  // Toggle slow on every iframe
+  window.addEventListener('keyup', function(e) {
+    var iframes = document.querySelectorAll("iframe");
+    for(var i=0;i<iframes.length;i++) {
+      var iframe = iframes[i];
+      iframe.contentWindow.dynamics.toggleSlow();
+    }
+  });
+  </script>
 </body>
 </html>
