@@ -1,0 +1,34 @@
+.hljs {
+  color: #000000;
+}
+
+.hljs-comment {
+  color: #0066FF;
+}
+
+.hljs-built_in {
+  color: #6c76e1;
+  font-family: "SourceCodePro-Semibold", Menlo, Courier, Arial;
+  font-weight: normal;
+}
+
+.hljs-function .hljs-keyword,
+.hljs-keyword {
+  color: #0000FF;
+  font-family: "SourceCodePro-Semibold", Menlo, Courier, Arial;
+  font-weight: normal;
+}
+
+.hljs-title {
+  color: #0000A2;
+  font-family: "SourceCodePro-Semibold", Menlo, Courier, Arial;
+  font-weight: normal;
+}
+
+.hljs-number {
+  color: #2129d6;
+}
+
+.hljs-string {
+  color: #006b00;
+}
