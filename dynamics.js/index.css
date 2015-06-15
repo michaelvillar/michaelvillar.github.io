@@ -36,8 +36,11 @@ nav a {
   color: #0070FF;
   text-decoration: none;
 }
-nav a:first-child {
+nav a:not(.right) {
   margin-right: 30px;
+}
+nav a.stripe {
+  color: #394E6E;
 }
 nav .right {
   float: right;
