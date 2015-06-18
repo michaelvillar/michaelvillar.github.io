@@ -57,7 +57,7 @@
   makeArrayFn = function(fn) {
     return function(el) {
       var args, i, res;
-      if (el instanceof Array || el instanceof NodeList) {
+      if (el instanceof Array || el instanceof NodeList || el instanceof HTMLCollection) {
         res = (function() {
           var _i, _ref, _results;
           _results = [];
@@ -1394,7 +1394,16 @@
         return timeout.id !== timeoutId;
       });
     }
-    dynamics.stop(el);
+    dynamics.stop(el, {
+      timeout: false
+    });
+    if (!options.animated) {
+      dynamics.css(el, properties);
+      if (typeof options.complete === "function") {
+        options.complete(this);
+      }
+      return;
+    }
     properties = parseProperties(properties);
     startProperties = getCurrentProperties(el, Object.keys(properties));
     endProperties = {};
@@ -1910,7 +1919,8 @@
     applyDefaults(options, {
       type: dynamics.easeInOut,
       duration: 1000,
-      delay: 0
+      delay: 0,
+      animated: true
     });
     options.duration = Math.max(0, options.duration * slowRatio);
     options.delay = Math.max(0, options.delay);
@@ -1927,14 +1937,22 @@
     }
   });
 
-  dynamics.stop = makeArrayFn(function(el) {
-    animationsTimeouts = animationsTimeouts.filter(function(timeout) {
-      if (timeout.el === el) {
-        dynamics.clearTimeout(timeout.id);
-        return true;
-      }
-      return false;
-    });
+  dynamics.stop = makeArrayFn(function(el, options) {
+    if (options == null) {
+      options = {};
+    }
+    if (options.timeout == null) {
+      options.timeout = true;
+    }
+    if (options.timeout) {
+      animationsTimeouts = animationsTimeouts.filter(function(timeout) {
+        if (timeout.el === el && ((options.filter == null) || options.filter(timeout))) {
+          dynamics.clearTimeout(timeout.id);
+          return true;
+        }
+        return false;
+      });
+    }
     return animations = animations.filter(function(animation) {
       return animation.el !== el;
     });
